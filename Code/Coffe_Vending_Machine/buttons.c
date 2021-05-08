@@ -8,21 +8,20 @@
 *
 * DESCRIPTION:
 *
-* Change Log:
+* Date of creation or change:
 ******************************************************************************
-* Date    Id    Change
-* 210508
+* Month     Day     Year    Change
+* 05        08      21
 * --------------------
 * 090215  MoH   Module created.
 *
 *****************************************************************************/
-
 /***************************** Include files *******************************/
 #include <stdint.h>
 #include "tm4c123gh6pm.h"
 #include "emp_type.h"
 #include "events.h"
-#include "button.h"
+#include "buttons.h"
 #include "swtimers.h"
 /*****************************    Defines    *******************************/
 #define BS_IDLE           0
