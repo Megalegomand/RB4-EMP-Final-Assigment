@@ -5,5 +5,5 @@
  */
 int main(void)
 {
-	return 0;
-}fff
+	return 1;
+}

@@ -26,6 +26,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>FreeRTOSConfig.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Additional%20Files/FreeRTOS/FreeRTOSConfig.h</locationURI>
+		</link>
+		<link>
 			<name>emp_type.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Additional%20Files/emp_type.h</locationURI>
