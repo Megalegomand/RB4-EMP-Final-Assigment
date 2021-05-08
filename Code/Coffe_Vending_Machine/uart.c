@@ -2,11 +2,11 @@
 * University of Southern Denmark
 * Embedded C Programming (ECP)
 *
-* MODULENAME.: button.h
+* MODULENAME.: events.h
 *
 * PROJECT: FinalAssignment - Coffe_Vending_Machine
 *
-* DESCRIPTION:
+* DESCRIPTION: Test.
 *
 * Date of creation or change:
 ******************************************************************************
@@ -16,7 +16,6 @@
 * 090215  MoH   Module created.
 *
 *****************************************************************************/
-
 /***************************** Include files *******************************/
 #include <stdint.h>
 #include "tm4c123gh6pm.h"

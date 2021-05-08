@@ -26,6 +26,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>FreeRTOS.h</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Additional%20Files/FreeRTOS/FRT_Library/FreeRTOS/Source/include/FreeRTOS.h</locationURI>
+		</link>
+		<link>
 			<name>FreeRTOSConfig.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Additional%20Files/FreeRTOS/FreeRTOSConfig.h</locationURI>

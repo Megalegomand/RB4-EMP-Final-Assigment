@@ -1,9 +1,21 @@
-/*
- * glob_def.h
- *
- *  Created on: 6. maj 2019
- *      Author: test
- */
+/*****************************************************************************
+* University of Southern Denmark
+* Embedded C Programming (ECP)
+*
+* MODULENAME.: events.h
+*
+* PROJECT: FinalAssignment - Coffe_Vending_Machine
+*
+* DESCRIPTION: Test.
+*
+* Date of creation or change:
+******************************************************************************
+* Month     Day     Year    Change
+* 05        08      21
+* --------------------
+* 090215  MoH   Module created.
+*
+*****************************************************************************/
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "event_groups.h"
