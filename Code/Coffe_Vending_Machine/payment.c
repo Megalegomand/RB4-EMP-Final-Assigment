@@ -19,10 +19,7 @@
 /***************************** Include files *******************************/
 #include "payment.h"
 /*****************************   Constants   *******************************/
-#define CARD_METHOD 1
-#define CASH_METHOD 2
-#define CARD_LENGTH 8
-#define PIN_LENGTH 4
+
 /*****************************   Variables   *******************************/
 PAYMENT_TYPE current_payment;
 /*****************************   Functions   *******************************/
@@ -73,6 +70,8 @@ void payment_task(void* pvParamters)
 
 PAYMENT_STATES paymenttype_state()
 {
+    lprintf(0, "Payment method");
+    lprintf(1, "%c Card | %c Cash", CARD_METHOD, CASH_METHOD);
     // Display "card or cash?"
 
     // Wait for key input getKey(portMAX_DELAY)
@@ -80,11 +79,10 @@ PAYMENT_STATES paymenttype_state()
     {
         switch (key_get(portMAX_DELAY))
         {
-
-        case '1':
+        case CARD_METHOD:
             return CARD;
 
-        case '2':
+        case CASH_METHOD:
             return CASH;
         default:
             break;
@@ -96,17 +94,22 @@ PAYMENT_STATES paymenttype_state()
 
 PAYMENT_STATES cardnumber_check_state()
 {
-    INT8U digit_counter;
+    lprintf(0, "Enter cardnumber");
+    lprintf(1, ""); // Reset bottom ready for writing digits
+
+    INT8U digit_counter = 0;
 
     while (1)
     {
         if (digit_counter < CARD_LENGTH)
         {
-
-            current_payment.cardnumber[digit_counter] = key_get(
-            portMAX_DELAY);
-            digit_counter++;
-
+            INT8U inp = key_get(portMAX_DELAY);
+            if (key2int(inp) != -1)
+            {
+                current_payment.cardnumber[digit_counter] = key2int(inp);
+                digit_counter++;
+                wr_ch_LCD(inp);
+            }
         }
         else
         {
@@ -118,30 +121,63 @@ PAYMENT_STATES cardnumber_check_state()
 PAYMENT_STATES pin_check_state()
 {
     INT8U pin[PIN_LENGTH];
-    INT8U pin_counter;
+    INT8U pin_counter = 0;
+    INT8U attempts = 0;
     while (1)
     {
         if (pin_counter < PIN_LENGTH)
         {
-            pin[pin_counter] = key_get(portMAX_DELAY);
-            pin_counter++;
+            if (pin_counter == 0)
+            {
+                lprintf(0, "Enter PIN");
+                lprintf(1, ""); // Reset bottom ready for writing digits
+            }
+            INT8U inp = key_get(portMAX_DELAY);
+            if (key2int(inp) != -1)
+            {
+                pin[pin_counter] = key2int(inp);
+                pin_counter++;
+                wr_ch_LCD('*');
+            }
         }
         else
         {
-            if ((pin[3] % 2 == 0 && current_payment.cardnumber[7] % 2 != 0)
-                    || (pin[3] % 2 != 0
-                            && current_payment.cardnumber[7] % 2 == 0))
+            if ((pin[PIN_LENGTH - 1] % 2 == 0
+                    && current_payment.cardnumber[CARD_LENGTH - 1] % 2 != 0)
+                    || (pin[PIN_LENGTH - 1] % 2 != 0
+                            && current_payment.cardnumber[CARD_LENGTH - 1] % 2
+                                    == 0))
             {
                 // cout payment complete
                 return LOG;
             }
             else
             {
-                // cout incorrect pin
-                return CARD;
+                if (attempts < CARD_MAX_ATTEMPTS)
+                {
+                    lprintf(0, "Incorrect PIN");
+                    lprintf(1, "Try again");
+                    key_get(portMAX_DELAY);
+                    pin_counter = 0;
+                    attempts++;
+                }
+                else
+                {
+                    return CARD;
+                }
             }
         }
     }
+}
+
+INT8S key2int(INT8U key)
+{
+    INT8S out = (INT8U) key - '0';
+    if (out < 0 || out > 9)
+    {
+        out = -1;
+    }
+    return out;
 }
 
 PAYMENT_STATES cash_state()
@@ -149,7 +185,7 @@ PAYMENT_STATES cash_state()
 
     while (1)
     {
-        if (current_payment.balance > coffee.price)
+        if (0) //current_payment.balance > coffee.price)
         {
 
             return CHANGE;
@@ -169,9 +205,9 @@ PAYMENT_STATES change_state()
 
     while (1)
     {
-        if (current_payment.balance > coffee.price)
+        if (0) //current_payment.balance > coffee.price)
         {
-            difference = current_payment.balance - coffee.price;
+            difference = 0; //current_payment.balance - coffee.price;
             while (i <= difference)
             {
                 // difference out on LCD

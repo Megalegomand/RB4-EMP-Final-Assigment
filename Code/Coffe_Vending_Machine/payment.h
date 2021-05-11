@@ -29,19 +29,21 @@
 
 /***************************** Include files *******************************/
 #include <stdint.h>
+#include <stdlib.h>
 #include "tm4c123gh6pm.h"
 #include "emp_type.h"
 #include "key.h"
 #include "digiswitch.h"
+#include "lcd.h"
 /*****************************    Defines    *******************************/
 #ifndef PAYMENT_H_
 #define PAYMENT_H_
 
-
-
-#endif /* PAYMENT_H_ */
-
-
+#define CARD_METHOD '1'
+#define CASH_METHOD '2'
+#define CARD_LENGTH 8
+#define PIN_LENGTH 4
+#define CARD_MAX_ATTEMPTS 3
 /***************** Variables ******************/
 typedef enum PAYMENT_STATES{START, PAYMENT, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATES;
 typedef struct {
@@ -57,6 +59,7 @@ PAYMENT_STATES pin_check_state();
 PAYMENT_STATES cash_state();
 PAYMENT_STATES change_state();
 PAYMENT_STATES log_state();
+INT8S key2int(INT8U key);
 /*****************************************************************************
 *   Input    : INT8U
 *   Output   : -
@@ -64,7 +67,4 @@ PAYMENT_STATES log_state();
 ******************************************************************************/
 
 /****************************** End Of Module *******************************/
-
-
-
-
+#endif

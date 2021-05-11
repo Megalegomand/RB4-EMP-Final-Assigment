@@ -10,6 +10,7 @@
 #include "systick_frt.h"
 #include "digiswitch.h"
 #include "lcd.h"
+#include "payment.h"
 
 extern QueueHandle_t uart0_rx_queue;
 void test_task(void* pvParameters)
@@ -63,7 +64,11 @@ int main(void)
     configMINIMAL_STACK_SIZE + 100,
                 NULL, PRIORITY_LOW, NULL);
 
-    xTaskCreate(test_task, "Test task",
+    //xTaskCreate(test_task, "Test task",
+    //configMINIMAL_STACK_SIZE + 100,
+    //            NULL, PRIORITY_LOW, NULL);
+
+    xTaskCreate(payment_task, "Payment task",
     configMINIMAL_STACK_SIZE + 100,
                 NULL, PRIORITY_LOW, NULL);
 
