@@ -179,7 +179,7 @@ extern void uart0_init(INT32U baud_rate, INT8U databits, INT8U stopbits,
 
     //UART0_LCRH_R |= UART_LCRH_FEN; // FIFO Enable
 
-    UART0_CTL_R |= UART_CTL_UARTEN | UART_CTL_TXE | UART_CTL_TXE;  // Enable UART
+    UART0_CTL_R |= UART_CTL_UARTEN | UART_CTL_TXE | UART_CTL_RXE;  // Enable UART
 
     // Setup receive interrupt
     UART0_IM_R |= UART_IM_RTIM; // Interrupt mask
@@ -240,7 +240,7 @@ void uart0_sendstring(char* c, INT8U length)
         while (!uart0_tx_rdy())
         {
         }
-        uart0_putc(c[i]);
+        xQueueSendToBack(uart0_tx_queue, &c[i], portMAX_DELAY);
     }
 }
 
