@@ -43,7 +43,11 @@ typedef struct {
 } Payment_struct;
 
 /***************** Variables ******************/
+<<<<<<< Updated upstream:Code/Coffe_Vending_Machine/payment.h
 typedef enum PAYMENT_STATES{Start, Paymenttype, Card, Cash, Cnumber, Pin, Log, Change} PAYMENT_STATES;
+=======
+typedef enum PAYMENT_STATES{START, PAYMENT_TYPE, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATE;
+>>>>>>> Stashed changes:Code/Coffe_Vending_Machine/Payment.h
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/
 void payment_task (void* pvParameters);
