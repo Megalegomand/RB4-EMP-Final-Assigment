@@ -27,6 +27,7 @@ typedef enum CoffeeTask_states
 Start,
 CoffeeType,
 Brew,
+<<<<<<< HEAD
 Log,
 }
 
@@ -37,6 +38,13 @@ struct CoffeeType {
 /*****************************   Constants   *******************************/
 /*****************************   Variables   *******************************/
 enum COFFEETASK_STATES CoffeeTask_state = Start;
+=======
+Log
+};
+/*****************************   Constants   *******************************/
+/*****************************   Variables   *******************************/
+//enum CoffeeTask_states CoffeeTask_state = Start;
+>>>>>>> main
 INT8U CoffeeTask_init;
 /*****************************   Functions   *******************************/
 
