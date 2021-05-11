@@ -22,13 +22,18 @@
 #include "emp_type.h"
 #include "CoffeeTask.h"
 /*****************************    Defines    *******************************/
-enum CoffeeTask_states
+typedef enum CoffeeTask_states
 {
 Start,
 CoffeeType,
 Brew,
 Log,
 }
+
+struct CoffeeType {
+   char  Name[20];
+   int   Price;
+} CoffeeType;
 /*****************************   Constants   *******************************/
 /*****************************   Variables   *******************************/
 enum COFFEETASK_STATES CoffeeTask_state = Start;
