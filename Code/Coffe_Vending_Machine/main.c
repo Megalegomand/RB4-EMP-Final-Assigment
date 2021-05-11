@@ -46,6 +46,7 @@ int main(void)
     key_init();
     digiswitch_init();
     lcd_init();
+    payment_init();
 
     // Create tasks
     xTaskCreate(uart0_write_task, "UART write task",

@@ -20,31 +20,25 @@
 #include <stdint.h>
 #include "tm4c123gh6pm.h"
 #include "emp_type.h"
-#include "CoffeeTask.h"
+#include "coffee.h"
 /*****************************    Defines    *******************************/
 typedef enum CoffeeTask_states
 {
 Start,
 CoffeeType,
 Brew,
-<<<<<<< HEAD
 Log,
-}
+} CoffeeTask_states;
 
-struct CoffeeType {
+typedef struct {
    char  Name[20];
    int   Price;
-} CoffeeType;
-/*****************************   Constants   *******************************/
-/*****************************   Variables   *******************************/
-enum COFFEETASK_STATES CoffeeTask_state = Start;
-=======
-Log
-};
+} CoffeeType1;
+
 /*****************************   Constants   *******************************/
 /*****************************   Variables   *******************************/
 //enum CoffeeTask_states CoffeeTask_state = Start;
->>>>>>> main
+
 INT8U CoffeeTask_init;
 /*****************************   Functions   *******************************/
 
@@ -66,22 +60,22 @@ void Coffee_Task(void *pvParameters)
 {
     INT8U CoffeeTask_state = 0;
 
-    COFFEETASK_STATES current_state;
+    CoffeeTask_states current_state;
     while(1)
     {
-        switch (current_menu)
+        switch (current_state)
               {
               case Start:
-                  current_menu = 1;
+                  current_state = 1;
                   break;
               case CoffeeType:
-                  current_menu = 1;
+                  current_state = 1;
                   break;
               case Brew:
-                  current_menu = 1;
+                  current_state = 1;
                   break;
               case Log:
-                  current_menu = 1;
+                  current_state = 1;
                  break;
 
               }

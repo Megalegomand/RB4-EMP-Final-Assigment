@@ -35,6 +35,8 @@
 #include "key.h"
 #include "digiswitch.h"
 #include "lcd.h"
+#include "semphr.h"
+#include "queue.h"
 /*****************************    Defines    *******************************/
 #ifndef PAYMENT_H_
 #define PAYMENT_H_
@@ -45,6 +47,8 @@
 #define PIN_LENGTH 4
 #define CARD_MAX_ATTEMPTS 3
 #define CARD_PREPAID 20
+#define CASH_CLOCKWISE 10
+#define CASH_COUNTERCLOCKWISE 5
 /***************** Variables ******************/
 typedef enum PAYMENT_STATES{START, PAYMENT, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATES;
 typedef struct {
@@ -52,9 +56,9 @@ typedef struct {
     INT8U cardnumber[8];
 } PAYMENT_TYPE;
 
-INT8U payment;
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/
+void payment_init();
 void payment_task (void* pvParameters);
 PAYMENT_STATES paymenttype_state();
 PAYMENT_STATES cardnumber_check_state();

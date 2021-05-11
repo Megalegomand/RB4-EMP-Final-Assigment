@@ -16,8 +16,8 @@
 * 090215  MoH   Module created.
 *
 *****************************************************************************/
-#ifndef COFFEETASK_H_
-#define COFFEETASK_H_
+#ifndef COFFEE_H_
+#define COFFEE_H_
 
 /***************************** Include files *******************************/
 /*****************************    Defines    *******************************/
@@ -32,4 +32,4 @@ void Coffee_Task(void *pvParameters);
 
 
 
-#endif /* COFFEETASK_H_ */
+#endif /* COFFEE_H_ */

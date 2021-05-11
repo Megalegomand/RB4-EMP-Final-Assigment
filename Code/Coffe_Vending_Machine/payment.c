@@ -22,6 +22,12 @@
 
 /*****************************   Variables   *******************************/
 PAYMENT_TYPE current_payment;
+extern QueueHandle_t ds_input_queue;
+
+INT8U balance;
+SemaphoreHandle_t balance_semaphore;
+
+QueueSetHandle_t cash_set;
 /*****************************   Functions   *******************************/
 /*****************************************************************************
  *   Input    :
@@ -29,9 +35,19 @@ PAYMENT_TYPE current_payment;
  *   Function :
  ******************************************************************************/
 
+void payment_init() {
+    balance_semaphore = xSemaphoreCreateMutex();
+    xSemaphoreGive(balance_semaphore);
+
+    // Set cotaining digiswtich input queue and coffee select semaphore
+    cash_set = xQueueCreateSet(DS_INPUT_QUEUE_LENGTH + 1);
+}
+
 void payment_task(void* pvParamters)
 {
     PAYMENT_STATES current_state = START;
+
+    xQueueAddToSet(ds_input_queue, cash_set);
 
     while (1)
     {
@@ -147,7 +163,7 @@ PAYMENT_STATES pin_check_state()
                             && current_payment.cardnumber[CARD_LENGTH - 1] % 2
                                     == 0))
             {
-                payment = CARD_PREPAID;
+                balance = CARD_PREPAID;
                 ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
                 return LOG;
             }
@@ -182,20 +198,33 @@ INT8S key2int(INT8U key)
 
 PAYMENT_STATES cash_state()
 {
-    payment = 0;
+    xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+    balance = 0;
+    xSemaphoreGive(balance_semaphore);
 
-    lprint(0, "Insert cash");
+    lprintf(0, "Insert cash");
 
     while (1)
     {
-        if (0) //current_payment.balance > coffee.price)
-        {
-            return CHANGE;
-        }
-        else
-        {
-            // balance = balance + digiswitch * 10 if counterclockwise pr digiswitch*5 if cockwise YEP
-        }
+        xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+        INT8S dir = 0;
+        do {
+            dir = digiswitch_get(0);
+            switch (dir) {
+            case 1:
+                balance += CASH_CLOCKWISE;
+                break;
+            case -1:
+                balance += CASH_COUNTERCLOCKWISE;
+                break;
+            }
+        } while (dir != 0);
+
+        lprintf(1, "%ikr", balance);
+
+        xSemaphoreGive(balance_semaphore);
+
+        xQueueSelectFromSet(cash_set, portMAX_DELAY);
     }
 }
 

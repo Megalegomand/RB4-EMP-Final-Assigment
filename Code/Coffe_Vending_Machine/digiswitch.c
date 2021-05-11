@@ -114,7 +114,9 @@ void digiswitch_task(void* pvParameters)
 INT8S digiswitch_get(TickType_t xTicksToWait)
 {
     INT8S dir;
-    xQueueReceive(ds_input_queue, &dir, xTicksToWait);
+    if (xQueueReceive(ds_input_queue, &dir, xTicksToWait) == 0) {
+        dir = 0;
+    }
     return dir;
 }
 
