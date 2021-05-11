@@ -53,7 +53,7 @@ INT8U key_catch(x, y)
     return (matrix[x - 1][y - 1]);
 }
 
-INT8U get_key(TickType_t xTicksToWait)
+INT8U key_get(TickType_t xTicksToWait)
 {
     INT8U key;
     if (xQueueReceive(Q_KEY, &key, xTicksToWait))
@@ -88,7 +88,10 @@ void key_init()
 
     // Enable pins for rows and columns
     GPIO_PORTA_DEN_R |= 0x1C;
-    GPIO_PORTE_DEN_R |= 0x15;
+    GPIO_PORTE_DEN_R |= 0x0F;
+
+    Q_KEY = xQueueCreate(KEY_Q_LENGTH, KEY_Q_WIDTH);
+    configASSERT(Q_KEY);
 }
 
 void key_task()
@@ -129,6 +132,9 @@ void key_task()
         case 1:
             if (!(GPIO_PORTE_DATA_R & 0x0F)) // We stay here until the button is released so a button press is not counted more than once
             {
+                // Wait for debounce
+                vTaskDelay(pdMS_TO_TICKS(KEY_DEBOUNCE_DELAY_MS));
+                // Switch back
                 my_state = 0;
             }
             break;
