@@ -18,14 +18,7 @@
 *****************************************************************************/
 
 /***************************** Include files *******************************/
-#include <stdint.h>
-#include "tm4c123gh6pm.h"
-#include "emp_type.h"
 #include "lcd.h"
-#include "glob_def.h"
-#include "file.h"
-#include "string.h"
-
 
 /*****************************    Defines    *******************************/
 
@@ -63,7 +56,7 @@ const INT8U LCD_init_sequense[]=
 enum LCD_states LCD_state = LCD_POWER_UP;
 INT8U LCD_init;
 
-
+QueueHandle_t Q_LCD;
 
 /*****************************   Functions   *******************************/
 INT8U wr_ch_LCD( INT8U Ch )
@@ -202,8 +195,7 @@ void clr_LCD()
 *   Function : Clear LCD.
 ******************************************************************************/
 {
-  gfprintf(COM2, "%c%c                                                                                       ", 0x1B, 0x80);
-  //wr_ctrl_LCD( 0x01 );
+    wr_ctrl_LCD( 0x01 );
 }
 
 

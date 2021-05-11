@@ -1,19 +1,19 @@
 /*****************************************************************************
 * University of Southern Denmark
-* Embedded C Programming (ECP)
+* Embedded Programming (EMP)
 *
-* MODULENAME.: events.h
+* MODULENAME.: uart.h
 *
-* PROJECT: FinalAssignment - Coffe_Vending_Machine
+* PROJECT....: EMP
 *
-* DESCRIPTION: Test.
+* DESCRIPTION: Test. screen /dev/ttyACM? 115200
 *
-* Date of creation or change:
+* Change Log:
 ******************************************************************************
-* Month     Day     Year    Change
-* 05        08      21
+* Date    Id    Change
+* YYMMDD
 * --------------------
-* 090215  MoH   Module created.
+* 150228  MoH   Module created.
 *
 *****************************************************************************/
 
@@ -21,48 +21,63 @@
 #define _UART_H
 
 /***************************** Include files *******************************/
-
+#include "tm4c123gh6pm.h"
+#include "emp_type.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
 /*****************************    Defines    *******************************/
-
-/*****************************   Constants   *******************************/
-
+#define UART_QUEUE_LENGTH 64
+#define UART_ITEM_SIZE    8
+#define UPRINT_BUFFER     50
+/***************** Variables ******************/
+extern QueueHandle_t uart0_rx_queue;
+extern QueueHandle_t uart0_tx_queue;
 /*****************************   Functions   *******************************/
 
-extern BOOLEAN uart0_rx_rdy();
+BOOLEAN uart0_rx_rdy();
 /*****************************************************************************
 *   Input    : -
 *   Output   : -
 *   Function : Character ready at uart0 RX
 ******************************************************************************/
 
-extern INT8U uart0_getc();
+INT8U uart0_getc();
 /*****************************************************************************
 *   Input    : -
 *   Output   : -
 *   Function : Get character from uart0 RX
 ******************************************************************************/
 
-extern BOOLEAN uart0_tx_rdy();
+BOOLEAN uart0_tx_rdy();
 /*****************************************************************************
 *   Input    : -
 *   Output   : -
 *   Function : uart0 TX buffer ready
 ******************************************************************************/
 
-extern void uart0_putc( INT8U );
+void uart0_putc( INT8U );
 /*****************************************************************************
 *   Input    : -
 *   Output   : -
 *   Function : Put character to uart0 TX
 ******************************************************************************/
 
-extern void uart0_init( INT32U, INT8U, INT8U, INT8U );
+void uart0_init( INT32U, INT8U, INT8U, INT8U );
 /*****************************************************************************
 *   Input    : -
 *   Output   : -
 *   Function : Initialize uart 0
 ******************************************************************************/
 
+void uart0_read_isr();
+void uart0_write_task(void* pvParameters);
+void uart0_sendstring(char* c, INT8U length);
+void uprintf(char* str, const char * format, ... );
 
 /****************************** End Of Module *******************************/
 #endif
