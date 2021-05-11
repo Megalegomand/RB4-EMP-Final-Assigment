@@ -17,13 +17,9 @@
  *
  *****************************************************************************/
 
+QueueHandle_t Q_KEY;
+
 /***************************** Include files *******************************/
-#include <stdint.h>
-#include "tm4c123gh6pm.h"
-#include "emp_type.h"
-#include "FreeRTOS.h"
-#include "queue.h"
-#include "glob_def.h"
 #include "key.h"
 
 INT8U row(INT8U y)
@@ -57,12 +53,12 @@ INT8U key_catch(x, y)
     return (matrix[x - 1][y - 1]);
 }
 
-INT8U get_keyboard()
+INT8U get_key(TickType_t xTicksToWait)
 {
-    INT8U test;
-    if (xQueueReceive(Q_KEY, &test, 0))
+    INT8U key;
+    if (xQueueReceive(Q_KEY, &key, xTicksToWait))
     {
-        return test;
+        return key;
     }
     return 0;
 }
@@ -77,6 +73,22 @@ BOOLEAN check_column(INT8U x)
         return 1;
     }
     return 0;
+}
+
+void key_init()
+{
+    int dummy;
+
+    SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0 | SYSCTL_RCGCGPIO_R4; // Enable port A and E
+
+    dummy = SYSCTL_RCGC2_R; // Wait for clock enable
+
+    // Set columns as output
+    GPIO_PORTA_DIR_R |= 0x1C;
+
+    // Enable pins for rows and columns
+    GPIO_PORTA_DEN_R |= 0x1C;
+    GPIO_PORTE_DEN_R |= 0x15;
 }
 
 void key_task()

@@ -28,6 +28,7 @@ int main(void)
 {
     // Initialize
     uart0_init(19200, 8, 1, 0);
+    init_systick();
 
     // Create tasks
     xTaskCreate(uart0_write_task, "UART write task",

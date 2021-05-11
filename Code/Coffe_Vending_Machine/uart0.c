@@ -158,7 +158,7 @@ extern void uart0_init(INT32U baud_rate, INT8U databits, INT8U stopbits,
     INT32U BRD;
 
     // Enable clock for UART and GPIO port A
-    SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOA; // Enable clock for Port A
+    SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0; // Enable clock for Port A
     SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R0; // Enable UART 0
 
     // Setup GPIO PA0 and PA1
