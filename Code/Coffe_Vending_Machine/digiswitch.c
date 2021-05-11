@@ -45,41 +45,52 @@ void digiswitch_init()
     GPIO_PORTA_IBE_R |= 0b00100000; // Both edges
     GPIO_PORTA_IM_R |= 0b00100000; // Interrupt mask
 
+    // NVIC Enable interrupt 0 (GPIOA)
+    NVIC_EN0_R |= (1 << 0);
+    // Set next highest priority (lowest numberical value) allowed by FreeRTOS
+    NVIC_PRI0_R |= (101 << 5);
+
     // Create input queue
     ds_input_queue = xQueueCreate(DS_INPUT_QUEUE_LENGTH, DS_INPUT_QUEUE_WIDTH);
 }
 
 void digiswitch_isr()
 {
-    INT8S dir = 0;
-    // Rotation dependent on falling or rising edge
-    // and the value of B (PA6)
-    if (GPIO_PORTA_DATA_R & 0b00100000) // Rising edge
+    if (GPIO_PORTA_RIS_R & 0b00100000)
     {
-        if (GPIO_PORTA_DATA_R & 0b01000000)
-        {
-            dir = 1;
-        }
-        else
-        {
-            dir = -1;
-        }
-    }
-    else // Faling edge
-    {
-        if (GPIO_PORTA_DATA_R & 0b01000000)
-        {
-            dir = -1;
-        }
-        else
-        {
-            dir = 1;
-        }
-    }
+        // Disable interrupt
+        GPIO_PORTA_IM_R &= ~(0b00100000);
 
-    xQueueSendToBack(ds_input_queue, &dir, portMAX_DELAY);
+        INT8S dir = 0;
+        // Rotation dependent on falling or rising edge
+        // and the value of B (PA6)
+        if (GPIO_PORTA_DATA_R & 0b00100000) // Rising edge
+        {
+            if (GPIO_PORTA_DATA_R & 0b01000000)
+            {
+                dir = 1;
+            }
+            else
+            {
+                dir = -1;
+            }
+        }
+        else // Faling edge
+        {
+            if (GPIO_PORTA_DATA_R & 0b01000000)
+            {
+                dir = -1;
+            }
+            else
+            {
+                dir = 1;
+            }
+        }
 
-    vTaskNotifyGiveFromISR(digiswitch_t, NULL);
+        xQueueSendToBack(ds_input_queue, &dir, portMAX_DELAY);
+
+        vTaskNotifyGiveFromISR(digiswitch_t, NULL);
+    }
 }
 
 void digiswitch_task(void* pvParameters)
@@ -88,8 +99,9 @@ void digiswitch_task(void* pvParameters)
 
     while (1)
     {
-        // Clear interrupt
+        // Clear and enable interrupt
         GPIO_PORTA_ICR_R |= 0b00100000;
+        GPIO_PORTA_IM_R |= 0b00100000;
 
         // Wait debounce
         vTaskDelay(pdMS_TO_TICKS(DS_DEBOUNCE_MS));

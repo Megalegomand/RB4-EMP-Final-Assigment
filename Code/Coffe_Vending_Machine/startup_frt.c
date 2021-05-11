@@ -69,6 +69,7 @@ static uint32_t pui32Stack[128];
 //
 //*****************************************************************************
 void uart0_read_isr(void);
+void digiswitch_isr(void);
 
 //*****************************************************************************
 //
@@ -97,7 +98,7 @@ void (* const g_pfnVectors[])(void) =
     0,                                      // Reserved
     xPortPendSVHandler,                     // FreeRTOS PendSV Handler
     xPortSysTickHandler,                    // FreeRTOS SysTick Handler
-    IntDefaultHandler,                      // GPIO Port A
+    digiswitch_isr,                      // GPIO Port A
     IntDefaultHandler,                      // GPIO Port B
     IntDefaultHandler,                      // GPIO Port C
     IntDefaultHandler,                      // GPIO Port D
