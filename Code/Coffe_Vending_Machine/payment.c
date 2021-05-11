@@ -17,7 +17,7 @@
 *
 *****************************************************************************/
 /***************************** Include files *******************************/
-#include "Payment.h"
+#include <payment.h>
 
 /*****************************   Constants   *******************************/
 #define IDIOT_CHECK 8
@@ -51,7 +51,7 @@ void payment_task (void* pvParamters){
                          break;
                      }
            case Card:
-               // Kør input card number ting
+               // Kï¿½r input card number ting
                PAYMENT_STATE = Cnumber;
                break;
            case Cnumber:
