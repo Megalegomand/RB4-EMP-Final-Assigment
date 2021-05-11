@@ -27,11 +27,11 @@ enum CoffeeTask_states
 Start,
 CoffeeType,
 Brew,
-Log,
-}
+Log
+};
 /*****************************   Constants   *******************************/
 /*****************************   Variables   *******************************/
-enum CoffeeTask_states CoffeeTask_state = Start;
+//enum CoffeeTask_states CoffeeTask_state = Start;
 INT8U CoffeeTask_init;
 /*****************************   Functions   *******************************/
 

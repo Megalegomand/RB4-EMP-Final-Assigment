@@ -46,12 +46,12 @@ void payment_task(void* pvParamters)
             break;
         case Card:
             // K�r input card number ting
-            PAYMENT_STATE = Cnumber;
+            current_state = Cnumber;
             break;
         case Cnumber:
-            if (getCardNumber.length() != IDIOT_CHECK)
+            if (0) //getCardNumber.length() != IDIOT_CHECK)
             {
-                LCDout = " use correct number u fat fuck"
+                //LCDout = " use correct number u fat fuck"
                 current_state = Card;
                 break;
             }
@@ -69,12 +69,12 @@ PAYMENT_STATES paymenttype_state()
     // Display "card or cash?"
 
     // Wait for key input getKey(portMAX_DELAY)
-    if (payment_method)
+    if (0)//payment_method)
     {
         return Card;
     }
     else
     {
-        return = Cash;
+        return Cash;
     }
 }
