@@ -20,6 +20,7 @@
 #include "Payment.h"
 
 /*****************************   Constants   *******************************/
+#define IDIOT_CHECK 8
 /*****************************   Variables   *******************************/
 /*****************************   Functions   *******************************/
 /*****************************************************************************
@@ -27,37 +28,43 @@
 *   Output   :
 *   Function :
 ******************************************************************************/
-void payment_init(INT8U order){
-    Payment_struct order;
+void payment_task (void* pvParamters){
+    PAYMENT_STATE = Start;
 
-}
-/*****************************************************************************
-*   Input    :
-*   Output   :
-*   Function :
-******************************************************************************/
-void payment_method(INT8U method, INT8U order){
-
-    // lcd task that says choose method
-
-    if(method)
+    while(1)
     {
-        order.PaymentType = 1;
-    }
-    {
-        order.PaymentType = 0;
-    }
-}
-/*****************************************************************************
-*   Input    :
-*   Output   :
-*   Function :
-******************************************************************************/
-void payment(INT8U order, INT8U amount ){
 
-    switch (coffee.type)
-    {
-    case 1
-    order.Balance = order.Balance + coffee.price;
+       switch(PAYMENT_STATES)
+        {
+           case Start:
+                 //Lock semaphore
+                   PAYMENT_STATE = Paymenttype;
+                   break;
+           case Paymenttype:
+               if(payment_method)
+                     {
+                         PAYMENT_STATE = Card;
+                         break;
+                     }
+                     {
+                         PAYMENT_STATE = Cash;
+                         break;
+                     }
+           case Card:
+               // Kør input card number ting
+               PAYMENT_STATE = Cnumber;
+               break;
+           case Cnumber:
+               if(getCardNumber.length()!=IDIOT_CHECK)
+               {
+                   LCDout = " use correct number u fat fuck"
+                   PAYMENT_STATE = Card;
+                   break;
+               }
+               {
+                   PAYMENT_STATE = Pin;
+                   break;
+               }
+        }
     }
 }

@@ -40,30 +40,20 @@ typedef struct {
     int Balance;
 
 } Payment_struct;
+
+/***************** Variables ******************/
+typedef enum PAYMENT_STATES{Start, Paymenttype, Card, Cash, Cnumber, Pin, Log, Change} PAYMENT_STATE;
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/
-void payment_init (INT8U order);
+void payment_task (void* pvParameters);
+
+PAYMENT_STATES
 /*****************************************************************************
 *   Input    : INT8U
 *   Output   : -
 *   Function : Choose payment method
 ******************************************************************************/
 
-void payment_method(INT8U method, INT8U order);
-
-/*****************************************************************************
-*   Input    : INT8U
-*   Output   : -
-*   Function : Payment function
-******************************************************************************/
-void payment (INT8U order, INT8U amount);
-
-/*****************************************************************************
-*   Input    : -
-*   Output   : -
-*   Function : Log payment
-******************************************************************************/
-void log_payment(void);
 /****************************** End Of Module *******************************/
 
 
