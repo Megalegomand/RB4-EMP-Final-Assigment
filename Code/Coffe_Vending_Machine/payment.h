@@ -44,12 +44,15 @@
 #define CARD_LENGTH 8
 #define PIN_LENGTH 4
 #define CARD_MAX_ATTEMPTS 3
+#define CARD_PREPAID 20
 /***************** Variables ******************/
 typedef enum PAYMENT_STATES{START, PAYMENT, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATES;
 typedef struct {
     INT8U balance;
     INT8U cardnumber[8];
 } PAYMENT_TYPE;
+
+INT8U payment;
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/
 void payment_task (void* pvParameters);

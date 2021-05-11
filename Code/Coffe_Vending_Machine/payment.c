@@ -46,7 +46,6 @@ void payment_task(void* pvParamters)
             current_state = paymenttype_state();
             break;
         case CARD:
-            // K�r input card number ting
             current_state = CARD_NUMBER;
             break;
         case CARD_NUMBER:
@@ -148,7 +147,8 @@ PAYMENT_STATES pin_check_state()
                             && current_payment.cardnumber[CARD_LENGTH - 1] % 2
                                     == 0))
             {
-                // cout payment complete
+                payment = CARD_PREPAID;
+                ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
                 return LOG;
             }
             else
@@ -182,14 +182,15 @@ INT8S key2int(INT8U key)
 
 PAYMENT_STATES cash_state()
 {
+    payment = 0;
+
+    lprint(0, "Insert cash");
 
     while (1)
     {
         if (0) //current_payment.balance > coffee.price)
         {
-
             return CHANGE;
-
         }
         else
         {
