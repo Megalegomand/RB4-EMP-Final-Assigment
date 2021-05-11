@@ -17,28 +17,25 @@
  *
  *****************************************************************************/
 /***************************** Include files *******************************/
-#include <stdint.h>
-#include "tm4c123gh6pm.h"
-#include "emp_type.h"
 #include "payment.h"
-#include "key.h"
-#include "digiswitch.h"
 /*****************************   Constants   *******************************/
 #define CARD_METHOD 1
 #define CASH_METHOD 2
 #define CARD_LENGTH 8
 #define PIN_LENGTH 4
 /*****************************   Variables   *******************************/
+PAYMENT_TYPE current_payment;
 /*****************************   Functions   *******************************/
 /*****************************************************************************
  *   Input    :
  *   Output   :
  *   Function :
  ******************************************************************************/
+
 void payment_task(void* pvParamters)
 {
     PAYMENT_STATES current_state = START;
-    PAYMENT_TYPE current_payment;
+
     while (1)
     {
 
@@ -63,6 +60,13 @@ void payment_task(void* pvParamters)
             break;
         case CASH:
             current_state = cash_state();
+            break;
+        case CHANGE:
+            current_state = change_state();
+            break;
+        case LOG:
+            current_state = log_state();
+            break;
         }
     }
 }
@@ -70,27 +74,24 @@ void payment_task(void* pvParamters)
 PAYMENT_STATES paymenttype_state()
 {
     // Display "card or cash?"
-    INT8U keystroke;
+
     // Wait for key input getKey(portMAX_DELAY)
     while (1)
     {
-        if ((key_get(portMAX_DELAY) == CARD_METHOD) | (CASH_METHOD))
+        switch (key_get(portMAX_DELAY))
         {
-            keystroke = key_get(portMAX_DELAY);
+
+        case '1':
+            return CARD;
+
+        case '2':
+            return CASH;
+        default:
             break;
+
         }
     }
-    switch (keystroke)
-    {
-    case 1:
-    {
-        return CARD;
-    }
-    case 2:
-    {
-        return CASH;
-    }
-    }
+
 }
 
 PAYMENT_STATES cardnumber_check_state()
@@ -102,7 +103,8 @@ PAYMENT_STATES cardnumber_check_state()
         if (digit_counter < CARD_LENGTH)
         {
 
-            current_payment.cardnumer[digit_counter] = key_get(portMAX_DELAY);
+            current_payment.cardnumber[digit_counter] = key_get(
+            portMAX_DELAY);
             digit_counter++;
 
         }
@@ -119,15 +121,16 @@ PAYMENT_STATES pin_check_state()
     INT8U pin_counter;
     while (1)
     {
-        if (counter < PIN_LENGTH)
+        if (pin_counter < PIN_LENGTH)
         {
-            pin[pin_counter] = getKey(MAX_DELAY);
-            counter++;
+            pin[pin_counter] = key_get(portMAX_DELAY);
+            pin_counter++;
         }
         else
         {
             if ((pin[3] % 2 == 0 && current_payment.cardnumber[7] % 2 != 0)
-                    || (pin[3] % 2 != 0 && current_payment.cardnumber[7] % 2 == 0))
+                    || (pin[3] % 2 != 0
+                            && current_payment.cardnumber[7] % 2 == 0))
             {
                 // cout payment complete
                 return LOG;
@@ -144,12 +147,12 @@ PAYMENT_STATES pin_check_state()
 PAYMENT_STATES cash_state()
 {
 
-    while(1)
+    while (1)
     {
-        if(current_payment.balance > coffee.price)
+        if (current_payment.balance > coffee.price)
         {
 
-         return CHANGE;
+            return CHANGE;
 
         }
         else
@@ -164,33 +167,34 @@ PAYMENT_STATES change_state()
     INT8U difference;
     INT8U i;
 
-    while(1)
+    while (1)
+    {
+        if (current_payment.balance > coffee.price)
         {
-            if(current_payment.balance > coffee.price)
+            difference = current_payment.balance - coffee.price;
+            while (i <= difference)
             {
-              difference = current_payment.balance - coffee.price;
-              while(i =< difference)
-              {
-                  // difference out on LCD
-                  // flash yellow led
-                  // delay
-                  i++;
-              }
+                // difference out on LCD
+                // flash yellow led
+                // delay
+                i++;
+            }
 
-            }
-            else
-            {
-                return LOG;
-            }
         }
+        else
+        {
+            return LOG;
+        }
+    }
 
 }
 
 PAYMENT_STATES log_state()
 {
-    while(1)
+    while (1)
     {
         // log data til pc
         return START;
     }
 }
+
