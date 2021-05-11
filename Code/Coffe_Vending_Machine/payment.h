@@ -47,7 +47,6 @@ typedef enum PAYMENT_STATES{Start, Paymenttype, Card, Cash, Cnumber, Pin, Log, C
 /*****************************   Functions   *******************************/
 void payment_task (void* pvParameters);
 
-PAYMENT_STATES
 /*****************************************************************************
 *   Input    : INT8U
 *   Output   : -
