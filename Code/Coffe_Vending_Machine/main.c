@@ -8,6 +8,7 @@
 #include "uart0.h"
 #include "key.h"
 #include "systick_frt.h"
+#include "digiswitch.h"
 
 extern QueueHandle_t uart0_rx_queue;
 void test_task(void* pvParameters)
@@ -16,8 +17,9 @@ void test_task(void* pvParameters)
     {
         char buf[1];
         //xQueueReceive(uart0_rx_queue, &msg, portMAX_DELAY);
-        INT8U key = key_get(portMAX_DELAY);
-        uprintf(buf, "%c", key);
+        //INT8U key = key_get(portMAX_DELAY);
+        INT8S dir = digiswitch_get(portMAX_DELAY);
+        uprintf(buf, "%i", dir);
     }
 }
 
@@ -32,6 +34,7 @@ int main(void)
     uart0_init(19200, 8, 1, 0);
     init_systick();
     key_init();
+    digiswitch_init();
 
     // Create tasks
     xTaskCreate(uart0_write_task, "UART write task",
@@ -40,7 +43,11 @@ int main(void)
 
     xTaskCreate(key_task, "Key task",
         configMINIMAL_STACK_SIZE + 100,
-                    NULL, PRIORITY_LOW, NULL);
+                    NULL, PRIORITY_IDLE, NULL);
+
+    xTaskCreate(digiswitch_task, "Digiswitch task",
+            configMINIMAL_STACK_SIZE + 100,
+                        NULL, PRIORITY_HIGH, NULL);
 
     xTaskCreate(test_task, "Test task",
     configMINIMAL_STACK_SIZE + 100,

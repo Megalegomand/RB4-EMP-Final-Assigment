@@ -25,11 +25,16 @@
 /***************** Defines ********************/ 
 #ifndef DIGISWITCH_H_
 #define DIGISWITCH_H_
+
+#define DS_INPUT_QUEUE_WIDTH sizeof(INT8S)
+#define DS_INPUT_QUEUE_LENGTH 20
+#define DS_DEBOUNCE_MS 1
 /***************** Variables ******************/ 
 /***************** Functions ******************/
 void digiswitch_init();
-void digiswitch_taks(void* pvParameters);
+void digiswitch_task(void* pvParameters);
 void digiswitch_isr();
+INT8S digiswitch_get(TickType_t xTicksToWait);
 /********************************************** 
 * Input: 
 * Output: 
