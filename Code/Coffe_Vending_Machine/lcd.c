@@ -23,7 +23,6 @@
 #include "emp_type.h"
 #include "lcd.h"
 #include "glob_def.h"
-#include "file.h"
 #include "string.h"
 
 
@@ -202,8 +201,7 @@ void clr_LCD()
 *   Function : Clear LCD.
 ******************************************************************************/
 {
-  gfprintf(COM2, "%c%c                                                                                       ", 0x1B, 0x80);
-  //wr_ctrl_LCD( 0x01 );
+    wr_ctrl_LCD( 0x01 );
 }
 
 
