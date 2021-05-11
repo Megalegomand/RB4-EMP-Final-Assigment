@@ -21,7 +21,12 @@
   #define _LCD_H
 
 /***************************** Include files *******************************/
-
+#include <stdint.h>
+#include "tm4c123gh6pm.h"
+#include "emp_type.h"
+#include "string.h"
+#include "FreeRTOS.h"
+#include "queue.h"
 /*****************************    Defines    *******************************/
 // Special ASCII characters
 // ------------------------

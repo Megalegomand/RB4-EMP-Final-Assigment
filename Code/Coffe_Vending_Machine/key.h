@@ -21,7 +21,6 @@
 #include "emp_type.h"
 #include "FreeRTOS.h"
 #include "queue.h"
-#include "glob_def.h"
 
 #ifndef _KEY_H
 #define _KEY_H
