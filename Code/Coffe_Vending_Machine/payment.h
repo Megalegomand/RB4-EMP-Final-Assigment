@@ -28,7 +28,6 @@
 
 
 /***************************** Include files *******************************/
-#include "emp_type.h"
 /*****************************    Defines    *******************************/
 #ifndef PAYMENT_H_
 #define PAYMENT_H_
@@ -37,17 +36,21 @@
 
 #endif /* PAYMENT_H_ */
 typedef struct {
-    BOOLEAN PaymentType;
-    int Balance;
-
-} Payment_struct;
+    BOOLEAN paymentType;
+    INT8U balance;
+    INT8U cardnumber[8];
+} PAYMENT_TYPE;
 
 /***************** Variables ******************/
-typedef enum PAYMENT_STATES{Start, Paymenttype, Card, Cash, Cnumber, Pin, Log, Change} PAYMENT_STATES;
+typedef enum PAYMENT_STATES{START, PAYMENT, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATES;
+
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/
 void payment_task (void* pvParameters);
 PAYMENT_STATES paymenttype_state();
+PAYMENT_STATES cardnumber_check_state();
+PAYMENT_STATES pin_check_state();
+
 /*****************************************************************************
 *   Input    : INT8U
 *   Output   : -
