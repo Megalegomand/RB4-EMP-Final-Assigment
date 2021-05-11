@@ -28,7 +28,6 @@
 
 
 /***************************** Include files *******************************/
-#include "emp_type.h"
 /*****************************    Defines    *******************************/
 #ifndef PAYMENT_H_
 #define PAYMENT_H_
@@ -43,7 +42,7 @@ typedef struct {
 } PAYMENT_TYPE;
 
 /***************** Variables ******************/
-typedef enum PAYMENT_STATES{START, PAYMENT_TYPE, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATES;
+typedef enum PAYMENT_STATES{START, PAYMENT, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATES;
 
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/

@@ -17,9 +17,12 @@
  *
  *****************************************************************************/
 /***************************** Include files *******************************/
+#include <stdint.h>
+#include "tm4c123gh6pm.h"
+#include "emp_type.h"
 #include "payment.h"
 #include "key.h"
-
+#include "digiswitch.h"
 /*****************************   Constants   *******************************/
 #define CARD_METHOD 1
 #define CASH_METHOD 2
@@ -34,8 +37,8 @@
  ******************************************************************************/
 void payment_task(void* pvParamters)
 {
-    PAYMENT_STATES current_state = Start;
-    PAYMENT_TYPE payment;
+    PAYMENT_STATES current_state = START;
+    PAYMENT_TYPE current_payment;
     while (1)
     {
 
@@ -43,21 +46,21 @@ void payment_task(void* pvParamters)
         {
         case START:
             //Lock semaphore
-            current_state = PAYMENT_TYPE;
+            current_state = PAYMENT;
             break;
-        case PAYMENT_TYPE:
+        case PAYMENT:
             current_state = paymenttype_state();
             break;
         case CARD:
             // Kï¿½r input card number ting
-            current_state = Cnumber;
+            current_state = CARD_NUMBER;
             break;
         case CARD_NUMBER:
             current_state = cardnumber_check_state();
             break;
         case PIN:
             current_state = pin_check_state();
-            break;¨
+            break;
         case CASH:
             current_state = cash_state();
         }
@@ -71,9 +74,9 @@ PAYMENT_STATES paymenttype_state()
     // Wait for key input getKey(portMAX_DELAY)
     while (1)
     {
-        if (getKey(MAX_DELAY) == CARD_METHOD | CASH_METHOD)
+        if ((key_get(portMAX_DELAY) == CARD_METHOD) | (CASH_METHOD))
         {
-            keystroke = getKey(MAX_DELAY);
+            keystroke = key_get(portMAX_DELAY);
             break;
         }
     }
@@ -96,11 +99,11 @@ PAYMENT_STATES cardnumber_check_state()
 
     while (1)
     {
-        if (counter < CARD_LENGTH)
+        if (digit_counter < CARD_LENGTH)
         {
 
-            payment.cardnumer[digit_counter] = getKey(MAX_DELAY);
-            counter++;
+            current_payment.cardnumer[digit_counter] = key_get(portMAX_DELAY);
+            digit_counter++;
 
         }
         else
@@ -123,8 +126,8 @@ PAYMENT_STATES pin_check_state()
         }
         else
         {
-            if ((pin[3] % 2 == 0 && payment.cardnumber[7] % 2 != 0)
-                    || (pin[3] % 2 != 0 && payment.cardnumber[7] % 2 == 0))
+            if ((pin[3] % 2 == 0 && current_payment.cardnumber[7] % 2 != 0)
+                    || (pin[3] % 2 != 0 && current_payment.cardnumber[7] % 2 == 0))
             {
                 // cout payment complete
                 return LOG;
@@ -143,7 +146,7 @@ PAYMENT_STATES cash_state()
 
     while(1)
     {
-        if(payment.balance > coffee.price)
+        if(current_payment.balance > coffee.price)
         {
 
          return CHANGE;
@@ -163,9 +166,9 @@ PAYMENT_STATES change_state()
 
     while(1)
         {
-            if(payment.balance > coffee.price)
+            if(current_payment.balance > coffee.price)
             {
-              difference = payment.balance - coffee.price;
+              difference = current_payment.balance - coffee.price;
               while(i =< difference)
               {
                   // difference out on LCD
