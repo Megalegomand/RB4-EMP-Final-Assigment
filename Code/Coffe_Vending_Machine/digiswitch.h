@@ -27,7 +27,7 @@
 #define DIGISWITCH_H_
 
 #define DS_INPUT_QUEUE_WIDTH sizeof(INT8S)
-#define DS_INPUT_QUEUE_LENGTH 20
+#define DS_INPUT_QUEUE_LENGTH 255
 #define DS_DEBOUNCE_MS 1
 /***************** Variables ******************/ 
 /***************** Functions ******************/

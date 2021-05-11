@@ -22,6 +22,9 @@
 
 /***************************** Include files *******************************/
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
 #include "tm4c123gh6pm.h"
 #include "emp_type.h"
 #include "string.h"
@@ -48,6 +51,7 @@ INT8U wr_ch_LCD(INT8U Ch);
 
 void lcd_init();
 void lcd_task(void* pvParameters);
+void lprintf(INT16U line, const char * format, ... );
 /*****************************************************************************
  *   Input    : -
  *   Output   : -

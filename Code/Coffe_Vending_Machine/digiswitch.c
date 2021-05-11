@@ -68,22 +68,22 @@ void digiswitch_isr()
         {
             if (GPIO_PORTA_DATA_R & 0b01000000)
             {
-                dir = 1;
+                dir = -1;
             }
             else
             {
-                dir = -1;
+                dir = 1;
             }
         }
         else // Faling edge
         {
             if (GPIO_PORTA_DATA_R & 0b01000000)
             {
-                dir = -1;
+                dir = 1;
             }
             else
             {
-                dir = 1;
+                dir = -1;
             }
         }
 

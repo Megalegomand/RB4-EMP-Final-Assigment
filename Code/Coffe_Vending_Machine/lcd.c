@@ -227,7 +227,8 @@ void out_LCD(INT8U Ch)
     out_LCD_low(Ch);
 }
 
-void lcd_init() {
+void lcd_init()
+{
     int dummy;
 
     SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R2 | SYSCTL_RCGCGPIO_R3; // Enable port C and D
@@ -238,7 +239,25 @@ void lcd_init() {
     GPIO_PORTC_DEN_R |= 0xF0;
     GPIO_PORTD_DEN_R |= 0x0C;
 
+    // Set as output
+    GPIO_PORTC_DIR_R |= 0xF0;
+    GPIO_PORTD_DIR_R |= 0x0C;
+
     Q_LCD = xQueueCreate(LCD_Q_LENGTH, LCD_Q_WIDTH);
+}
+
+void lprintf(INT16U line, const char * format, ... )
+{
+    char buffer[20];
+    move_LCD(0, line);
+    wr_str_LCD("                 ");
+    move_LCD(0, line);
+    va_list args;
+    va_start(args, format);
+    INT8U len = vsprintf(buffer, format, args);
+    va_end(args);
+    wr_str_LCD(buffer);
+    return;
 }
 
 void lcd_task(void* pvParameters)
