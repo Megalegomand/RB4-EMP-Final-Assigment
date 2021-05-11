@@ -43,7 +43,7 @@ typedef struct {
 } PAYMENT_TYPE;
 
 /***************** Variables ******************/
-typedef enum PAYMENT_STATES{START, PAYMENT_TYPE, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATE;
+typedef enum PAYMENT_STATES{START, PAYMENT_TYPE, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATES;
 
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/
