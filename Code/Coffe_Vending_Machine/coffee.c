@@ -1,95 +1,142 @@
 /*****************************************************************************
-* University of Southern Denmark
-* Embedded C Programming (ECP)
-*
-* MODULENAME.: CoffeeTask.c
-*
-* PROJECT: FinalAssignment - Coffe_Vending_Machine
-*
-* DESCRIPTION:
-*
-* Date of creation or change:
-******************************************************************************
-* Month     Day     Year    Change
-* 05        08      21
-* --------------------
-* 090215  MoH   Module created.
-*
-*****************************************************************************/
+ * University of Southern Denmark
+ * Embedded C Programming (ECP)
+ *
+ * MODULENAME.: CoffeeTask.c
+ *
+ * PROJECT: FinalAssignment - Coffe_Vending_Machine
+ *
+ * DESCRIPTION:
+ *
+ * Date of creation or change:
+ ******************************************************************************
+ * Month     Day     Year    Change
+ * 05        08      21
+ * --------------------
+ * 090215  MoH   Module created.
+ *
+ *****************************************************************************/
 /***************************** Include files *******************************/
-#include <stdint.h>
-#include "tm4c123gh6pm.h"
-#include "emp_type.h"
 #include "coffee.h"
 /*****************************    Defines    *******************************/
-typedef enum CoffeeTask_states
+typedef enum COFFEE_STATES
 {
-Start,
-CoffeeType,
-Brew,
-Log,
-} CoffeeTask_states;
+    SELECT_COFFEE, BREW, C_LOG,
+} COFFEE_STATES;
 
-typedef struct {
-   char  Name[20];
-   int   Price;
-} CoffeeType1;
+typedef struct
+{
+    BOOLEAN active;
+    char name[14]; // Allows it to be displayed
+    INT8U price;
+} COFFEE_TYPE;
 
 /*****************************   Constants   *******************************/
 /*****************************   Variables   *******************************/
 //enum CoffeeTask_states CoffeeTask_state = Start;
-
 INT8U CoffeeTask_init;
+
+COFFEE_TYPE coffee_types[10];
+COFFEE_TYPE* current_coffee;
+
+SemaphoreHandle_t active_semaphore;
+
+extern TaskHandle_t payment_t;
 /*****************************   Functions   *******************************/
 
-void Brewing (void)
+void coffee_init()
 {
-    
+    COFFEE_TYPE espresso;
+    espresso.active = 1;
+    strcpy(espresso.name, "Espresso");
+    espresso.price = 15;
+    coffee_types[0] = espresso;
+
+    COFFEE_TYPE cappuccino;
+    cappuccino.active = 1;
+    strcpy(cappuccino.name, "Cappuccino");
+    cappuccino.price = 24;
+    coffee_types[1] = cappuccino;
+
+    COFFEE_TYPE filter_coffee;
+    filter_coffee.active = 1;
+    strcpy(filter_coffee.name, "Filter coffee");
+    filter_coffee.price = 1;
+    coffee_types[2] = filter_coffee;
+
+    active_semaphore = xSemaphoreCreateBinary();
+    xSemaphoreGive(active_semaphore);
+}
+
+void brewing(void)
+{
 
 }
 
-
-
-
-
-
-
-
-
-void Coffee_Task(void *pvParameters)
+COFFEE_STATES select_coffee_state()
 {
-    INT8U CoffeeTask_state = 0;
+    lprintf(0, "Pick coffee");
 
-    CoffeeTask_states current_state;
-    while(1)
+    INT8U num = -1; // To start from 0
+
+    while (1)
+    {
+        do
+        {
+            if (num < COFFEE_TYPES_LENGTH)
+            {
+                num++;
+            }
+            else
+            {
+                num = 0;
+            }
+        }
+        while (!coffee_types[num].active);
+
+        lprintf(1, "%d-%s", num, coffee_types[num].name);
+
+        INT8S inp = key2int(key_get(pdMS_TO_TICKS(COFFEE_CYCLE_TIME_MS)));
+        if (inp != -1)
+        {
+            if (coffee_types[inp].active)
+            {
+                current_coffee = &coffee_types[inp];
+
+                xTaskNotifyGive(payment_t);
+
+                xSemaphoreTake(active_semaphore, portMAX_DELAY);
+
+                return BREW;
+            }
+        }
+    }
+}
+
+void coffee_task(void *pvParameters)
+{
+    COFFEE_STATES current_state = SELECT_COFFEE;
+    while (1)
     {
         switch (current_state)
-              {
-              case Start:
-                  current_state = 1;
-                  break;
-              case CoffeeType:
-                  current_state = 1;
-                  break;
-              case Brew:
-                  current_state = 1;
-                  break;
-              case Log:
-                  current_state = 1;
-                 break;
+        {
+        case SELECT_COFFEE:
+            current_state = select_coffee_state();
+            break;
+        case BREW:
+            ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+            current_state = 1;
+            while (1)
+            {
+            }
+            break;
+        case C_LOG:
+            current_state = 1;
+            break;
 
-              }
+        }
     }
-    
+
 }
-
-
-
-
-
-
-
-
-
 
 /****************************** End Of Module *******************************/

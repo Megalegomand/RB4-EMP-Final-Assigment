@@ -28,6 +28,8 @@ INT8U balance;
 SemaphoreHandle_t balance_semaphore;
 
 QueueSetHandle_t cash_set;
+
+extern TaskHandle_t payment_t;
 /*****************************   Functions   *******************************/
 /*****************************************************************************
  *   Input    :
@@ -40,14 +42,18 @@ void payment_init() {
     xSemaphoreGive(balance_semaphore);
 
     // Set cotaining digiswtich input queue and coffee select semaphore
-    cash_set = xQueueCreateSet(DS_INPUT_QUEUE_LENGTH + 1);
+    //cash_set = xQueueCreateSet(DS_INPUT_QUEUE_LENGTH + 1);
+}
+
+TaskHandle_t* payment_taskhandle() {
+    return payment_t;
 }
 
 void payment_task(void* pvParamters)
 {
     PAYMENT_STATES current_state = START;
 
-    xQueueAddToSet(ds_input_queue, cash_set);
+    //xQueueAddToSet(ds_input_queue, cash_set);
 
     while (1)
     {
@@ -55,7 +61,7 @@ void payment_task(void* pvParamters)
         switch (current_state)
         {
         case START:
-            //Lock semaphore
+            //ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
             current_state = PAYMENT;
             break;
         case PAYMENT:
@@ -86,13 +92,13 @@ void payment_task(void* pvParamters)
 PAYMENT_STATES paymenttype_state()
 {
     lprintf(0, "Payment method");
-    lprintf(1, "%c Card | %c Cash", CARD_METHOD, CASH_METHOD);
+    //lprintf(1, "%c Card | %c Cash", CARD_METHOD, CASH_METHOD);
     // Display "card or cash?"
 
     // Wait for key input getKey(portMAX_DELAY)
     while (1)
     {
-        switch (key_get(portMAX_DELAY))
+        /*switch (key_get(portMAX_DELAY))
         {
         case CARD_METHOD:
             return CARD;
@@ -102,7 +108,7 @@ PAYMENT_STATES paymenttype_state()
         default:
             break;
 
-        }
+        }*/
     }
 
 }
@@ -224,7 +230,7 @@ PAYMENT_STATES cash_state()
 
         xSemaphoreGive(balance_semaphore);
 
-        xQueueSelectFromSet(cash_set, portMAX_DELAY);
+        //xQueueSelectFromSet(cash_set, portMAX_DELAY);
     }
 }
 
