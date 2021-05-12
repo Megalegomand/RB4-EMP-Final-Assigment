@@ -12,6 +12,7 @@
 #include "lcd.h"
 #include "payment.h"
 #include "coffee.h"
+#include "led.h"
 
 extern QueueHandle_t uart0_rx_queue;
 void test_task(void* pvParameters)
@@ -76,6 +77,7 @@ int main(void)
     payment_init();
     coffee_init();
     switch_init();
+    led_init();
 
     // Create tasks
     xTaskCreate(coffee_task, "Coffee task",

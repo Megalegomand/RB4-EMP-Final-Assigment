@@ -26,6 +26,7 @@
 #include "payment.h"
 #include "switch.h"
 #include "task.h"
+#include "led.h"
 /*****************************    Defines    *******************************/
 #ifndef COFFEE_H_
 #define COFFEE_H_
@@ -33,7 +34,7 @@
 #define COFFEE_TYPES_LENGTH 10 // Allows for one digit types
 #define COFFEE_CYCLE_TIME_MS 3000
 
-#define SWITCH_POLL_DELAY_MS 500
+#define SWITCH_POLL_DELAY_MS 500 // Also determines display flash rate
 #define SLOW_DISPENSE_TIME_MS 2000.0f
 #define SLOW_DISPENSE_AMOUNT 0.5f
 #define FAST_DISPENSE_AMOUNT 1.0f

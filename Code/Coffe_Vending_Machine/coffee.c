@@ -91,6 +91,7 @@ COFFEE_STATES brew_state()
     FP32 slow_dispense = SLOW_DISPENSE_TIME_MS;
     while (1)
     {
+        led_off();
         if (!get_sw1())
         {
             lprintf(0, "Place cup");
@@ -104,16 +105,46 @@ COFFEE_STATES brew_state()
             if (current_coffee.amount_pay)
             {
                 FP32 dispense_mult = 0.0f;
-                if (slow_dispense >= 0.0f) {
+                if (slow_dispense >= 0.0f)
+                {
                     slow_dispense -= SWITCH_POLL_DELAY_MS * 1.0f;
                     dispense_mult = SLOW_DISPENSE_AMOUNT;
-                } else {
+                }
+                else
+                {
                     dispense_mult = FAST_DISPENSE_AMOUNT;
                 }
-                price += (SWITCH_POLL_DELAY_MS / 1000.0f)
-                        * current_coffee.price * dispense_mult;
+                price += (SWITCH_POLL_DELAY_MS / 1000.0f) * current_coffee.price
+                        * dispense_mult;
                 INT8U ceil_price = (INT8U) price + 0.5f;
+                led_yellow();
                 lprintf(0, "Price: %d", ceil_price); // Round up price
+            }
+            else
+            {
+                price = current_coffee.price;
+                if (current_coffee.grind_time >= 0.0f)
+                {
+                    led_red();
+                    lprintf(0, "Grinding...");
+                    current_coffee.grind_time -= SWITCH_POLL_DELAY_MS / 1000.0f;
+                }
+                else if (current_coffee.brew_time >= 0.0f)
+                {
+                    led_yellow();
+                    lprintf(0, "Brewing...");
+                    current_coffee.brew_time -= SWITCH_POLL_DELAY_MS / 1000.0f;
+                }
+                else if (current_coffee.milk_time >= 0.0f)
+                {
+                    led_yellow();
+                    lprintf(0, "Milk froth...");
+                    current_coffee.milk_time -= SWITCH_POLL_DELAY_MS / 1000.0f;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
         // Poll switches, this causes the screen to blink
