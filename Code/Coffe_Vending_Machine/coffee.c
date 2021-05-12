@@ -145,19 +145,19 @@ COFFEE_STATES brew_state()
             }
             else
             {
-                if (current_coffee.grind_time >= 0.0f)
+                if (current_coffee.grind_time > 0.0f)
                 {
                     led_red();
                     lprintf(0, "Grinding...");
                     current_coffee.grind_time -= SWITCH_POLL_DELAY_MS / 1000.0f;
                 }
-                else if (current_coffee.brew_time >= 0.0f)
+                else if (current_coffee.brew_time > 0.0f)
                 {
                     led_yellow();
                     lprintf(0, "Brewing...");
                     current_coffee.brew_time -= SWITCH_POLL_DELAY_MS / 1000.0f;
                 }
-                else if (current_coffee.milk_time >= 0.0f)
+                else if (current_coffee.milk_time > 0.0f)
                 {
                     led_green();
                     lprintf(0, "Milk froth...");
