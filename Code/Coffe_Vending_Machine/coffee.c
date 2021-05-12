@@ -142,7 +142,7 @@ COFFEE_STATES brew_state()
                 * dispense_mult;
                 ceil_price = (INT8U) price + 0.5f;
                 led_yellow();
-                lprintf(0, "Price: %d", ceil_price); // Round up price
+                lprintf(0, "Price: %dkr", ceil_price); // Round up price
             }
             else
             {

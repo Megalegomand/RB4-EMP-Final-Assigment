@@ -224,7 +224,7 @@ PAYMENT_STATES cash_state()
             }
         } while (dir != 0);
 
-        lprintf(1, "%ikr", balance);
+        lprintf(1, "Balance: %ikr", balance);
 
         xTaskNotifyGive(coffee_t);
         xSemaphoreGive(balance_semaphore);
