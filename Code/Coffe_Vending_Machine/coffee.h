@@ -38,7 +38,7 @@
 #define SLOW_DISPENSE_TIME_MS 2000.0f
 #define SLOW_DISPENSE_AMOUNT 0.5f
 #define FAST_DISPENSE_AMOUNT 1.0f
-#define MAX_INACTIVITY_MS 5000.0f;
+#define MAX_INACTIVITY_MS 5000.0f
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/
 
