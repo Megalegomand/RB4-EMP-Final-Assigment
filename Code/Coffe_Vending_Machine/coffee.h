@@ -34,6 +34,9 @@
 #define COFFEE_CYCLE_TIME_MS 3000
 
 #define SWITCH_POLL_DELAY_MS 500
+#define SLOW_DISPENSE_TIME_MS 2000.0f
+#define SLOW_DISPENSE_AMOUNT 0.5f
+#define FAST_DISPENSE_AMOUNT 1.0f
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/
 
