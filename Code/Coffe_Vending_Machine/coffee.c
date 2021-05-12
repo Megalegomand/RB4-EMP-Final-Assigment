@@ -43,7 +43,7 @@ INT8U CoffeeTask_init;
 COFFEE_TYPE coffee_types[10];
 COFFEE_TYPE current_coffee;
 
-static SemaphoreHandle_t active_semaphore;
+SemaphoreHandle_t active_semaphore;
 
 extern TaskHandle_t payment_t;
 
@@ -85,12 +85,11 @@ void coffee_init()
 
     active_semaphore = xSemaphoreCreateBinary();
     configASSERT(active_semaphore);
-    xSemaphoreGive(active_semaphore);
 }
 
 COFFEE_STATES brew_state()
 {
-    FP32 price = current_coffee.price * 1.0f;
+    FP32 price = (current_coffee.amount_pay ? 0.0f : current_coffee.price * 1.0f);
     FP32 slow_dispense = SLOW_DISPENSE_TIME_MS;
     INT8U balance_t = 0;
     INT8U ceil_price = (INT8U) price + 0.5f;
@@ -139,7 +138,7 @@ COFFEE_STATES brew_state()
                     dispense_mult = FAST_DISPENSE_AMOUNT;
                 }
                 price += (SWITCH_POLL_DELAY_MS / 1000.0f) * current_coffee.price
-                * dispense_mult;
+                        * dispense_mult;
                 ceil_price = (INT8U) price + 0.5f;
                 led_yellow();
                 lprintf(0, "Price: %dkr", ceil_price); // Round up price
@@ -176,9 +175,19 @@ COFFEE_STATES brew_state()
         vTaskDelay(pdMS_TO_TICKS(SWITCH_POLL_DELAY_MS));
     }
 
+    while (get_sw1())
+    {
+        lprintf(0, "Remove cup");
+        vTaskDelay(pdMS_TO_TICKS(SWITCH_POLL_DELAY_MS));
+    }
+
     xSemaphoreTake(balance_semaphore, portMAX_DELAY);
     balance -= ceil_price;
     xSemaphoreGive(balance_semaphore);
+
+    xSemaphoreGive(active_semaphore);
+
+    ulTaskNotifyTake(pdTRUE, portMAX_DELAY); // Wait for change
 
     return C_LOG;
 }
@@ -193,7 +202,7 @@ COFFEE_STATES select_coffee_state()
     {
         do
         {
-            if (num < COFFEE_TYPES_LENGTH)
+            if (num < COFFEE_TYPES_LENGTH-1)
             {
                 num++;
             }
@@ -215,7 +224,7 @@ COFFEE_STATES select_coffee_state()
 
                 xTaskNotifyGive(payment_t);
 
-                //xSemaphoreTake(active_semaphore, portMAX_DELAY);
+                xSemaphoreTake(active_semaphore, portMAX_DELAY);
 
                 return BREW;
             }
@@ -238,7 +247,7 @@ void coffee_task(void *pvParameters)
             current_state = brew_state();
             break;
         case C_LOG:
-            current_state = 1;
+            current_state = SELECT_COFFEE;
             break;
 
         }
