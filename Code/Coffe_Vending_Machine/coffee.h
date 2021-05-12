@@ -24,16 +24,18 @@
 #include "key.h"
 #include "lcd.h"
 #include "payment.h"
+#include "switch.h"
+#include "task.h"
 /*****************************    Defines    *******************************/
 #ifndef COFFEE_H_
 #define COFFEE_H_
 
 #define COFFEE_TYPES_LENGTH 10 // Allows for one digit types
 #define COFFEE_CYCLE_TIME_MS 3000
+
+#define SWITCH_POLL_DELAY_MS 500
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/
-
-void brewing (void);
 
 void coffee_init();
 

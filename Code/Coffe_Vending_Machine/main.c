@@ -58,6 +58,7 @@ void vAssertCalled(const char * pcFile, unsigned long ulLine)
 }
 
 TaskHandle_t payment_t;
+TaskHandle_t coffee_t;
 
 #define PRIORITY_HIGH 3
 #define PRIORITY_MEDIUM 2
@@ -74,15 +75,15 @@ int main(void)
     lcd_init();
     payment_init();
     coffee_init();
+    switch_init();
 
     // Create tasks
     xTaskCreate(coffee_task, "Coffee task",
-    configMINIMAL_STACK_SIZE+50,
-                NULL, PRIORITY_LOW, NULL);
-
+    configMINIMAL_STACK_SIZE+100,
+                NULL, PRIORITY_LOW, &coffee_t);
 
     xTaskCreate(payment_task, "Payment task",
-    configMINIMAL_STACK_SIZE + 50,
+    configMINIMAL_STACK_SIZE + 100,
                 NULL, PRIORITY_LOW, &payment_t);
 
     xTaskCreate(uart0_write_task, "UART write task",

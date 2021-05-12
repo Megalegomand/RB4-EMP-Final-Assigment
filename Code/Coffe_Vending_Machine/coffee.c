@@ -69,9 +69,23 @@ void coffee_init()
     xSemaphoreGive(active_semaphore);
 }
 
-void brewing(void)
+COFFEE_STATES brew_state()
 {
+    while (1) {
+        if (!get_sw1()) {
+            lprintf(0, "Place cup");
+        } else if (!get_sw2()) {
+            lprintf(0, "Press start");
+        } else {
+            break;
+        }
+        // Poll switches, this causes the screen to blink
+        // to make sure the text is read
+        // Definitely a feature and not laziness
+        vTaskDelay(pdMS_TO_TICKS(SWITCH_POLL_DELAY_MS));
+    }
 
+    return C_LOG;
 }
 
 COFFEE_STATES select_coffee_state()
@@ -126,10 +140,7 @@ void coffee_task(void *pvParameters)
             break;
         case BREW:
             ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-            current_state = 1;
-            while (1)
-            {
-            }
+            current_state = brew_state();
             break;
         case C_LOG:
             current_state = 1;

@@ -29,7 +29,7 @@ SemaphoreHandle_t balance_semaphore;
 
 QueueSetHandle_t cash_set;
 
-//extern TaskHandle_t payment_t;
+extern TaskHandle_t coffee_t;
 /*****************************   Functions   *******************************/
 /*****************************************************************************
  *   Input    :
@@ -166,6 +166,7 @@ PAYMENT_STATES pin_check_state()
                                     == 0))
             {
                 balance = CARD_PREPAID;
+                xTaskNotifyGive(coffee_t);
                 ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
                 return LOG;
             }
