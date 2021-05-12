@@ -78,6 +78,7 @@ int main(void)
     coffee_init();
     switch_init();
     led_init();
+    led_off();
 
     // Create tasks
     xTaskCreate(coffee_task, "Coffee task",

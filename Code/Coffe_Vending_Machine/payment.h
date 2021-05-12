@@ -46,7 +46,7 @@
 #define CARD_LENGTH 8
 #define PIN_LENGTH 4
 #define CARD_MAX_ATTEMPTS 3
-#define CARD_PREPAID 20
+#define CARD_PREPAID 30
 #define CASH_CLOCKWISE 10
 #define CASH_COUNTERCLOCKWISE 5
 /***************** Variables ******************/

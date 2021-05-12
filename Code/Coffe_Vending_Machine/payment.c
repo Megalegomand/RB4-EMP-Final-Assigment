@@ -166,6 +166,7 @@ PAYMENT_STATES pin_check_state()
                                     == 0))
             {
                 balance = CARD_PREPAID;
+                lprintf(1,"");
                 xTaskNotifyGive(coffee_t);
                 ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
                 return LOG;
@@ -225,6 +226,7 @@ PAYMENT_STATES cash_state()
 
         lprintf(1, "%ikr", balance);
 
+        xTaskNotifyGive(coffee_t);
         xSemaphoreGive(balance_semaphore);
 
         xQueueSelectFromSet(cash_set, portMAX_DELAY);

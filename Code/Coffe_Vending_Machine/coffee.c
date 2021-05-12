@@ -46,6 +46,9 @@ COFFEE_TYPE current_coffee;
 static SemaphoreHandle_t active_semaphore;
 
 extern TaskHandle_t payment_t;
+
+extern INT8U balance;
+extern SemaphoreHandle_t balance_semaphore;
 /*****************************   Functions   *******************************/
 
 void coffee_init()
@@ -87,21 +90,42 @@ void coffee_init()
 
 COFFEE_STATES brew_state()
 {
-    FP32 price = 0.0f;
+    FP32 price = current_coffee.price * 1.0f;
     FP32 slow_dispense = SLOW_DISPENSE_TIME_MS;
+    INT8U balance_t = 0;
+    INT8U ceil_price = (INT8U) price + 0.5f;
+    FP32 inactivity = 0.0f;
+
     while (1)
     {
         led_off();
-        if (!get_sw1())
+
+        xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+        balance_t = balance;
+        xSemaphoreGive(balance_semaphore);
+
+        if (inactivity > MAX_INACTIVITY_MS)
+        {
+            break;
+        }
+        else if (ceil_price >= balance_t)
+        {
+            lprintf(0, "Insufficient funds");
+            inactivity += SWITCH_POLL_DELAY_MS;
+        }
+        else if (!get_sw1())
         {
             lprintf(0, "Place cup");
+            inactivity += SWITCH_POLL_DELAY_MS;
         }
         else if (!get_sw2())
         {
             lprintf(0, "Press start");
+            inactivity += SWITCH_POLL_DELAY_MS;
         }
         else
         {
+            inactivity = 0.0f;
             if (current_coffee.amount_pay)
             {
                 FP32 dispense_mult = 0.0f;
@@ -115,14 +139,13 @@ COFFEE_STATES brew_state()
                     dispense_mult = FAST_DISPENSE_AMOUNT;
                 }
                 price += (SWITCH_POLL_DELAY_MS / 1000.0f) * current_coffee.price
-                        * dispense_mult;
-                INT8U ceil_price = (INT8U) price + 0.5f;
+                * dispense_mult;
+                ceil_price = (INT8U) price + 0.5f;
                 led_yellow();
                 lprintf(0, "Price: %d", ceil_price); // Round up price
             }
             else
             {
-                price = current_coffee.price;
                 if (current_coffee.grind_time >= 0.0f)
                 {
                     led_red();
@@ -137,7 +160,7 @@ COFFEE_STATES brew_state()
                 }
                 else if (current_coffee.milk_time >= 0.0f)
                 {
-                    led_yellow();
+                    led_green();
                     lprintf(0, "Milk froth...");
                     current_coffee.milk_time -= SWITCH_POLL_DELAY_MS / 1000.0f;
                 }
@@ -152,6 +175,10 @@ COFFEE_STATES brew_state()
         // Definitely a feature and not laziness
         vTaskDelay(pdMS_TO_TICKS(SWITCH_POLL_DELAY_MS));
     }
+
+    xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+    balance -= ceil_price;
+    xSemaphoreGive(balance_semaphore);
 
     return C_LOG;
 }
