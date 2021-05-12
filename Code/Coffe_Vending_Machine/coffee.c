@@ -110,7 +110,7 @@ COFFEE_STATES brew_state()
         }
         else if (ceil_price >= balance_t)
         {
-            lprintf(0, "Insufficient funds");
+            lprintf(0, "Insert more cash");
             inactivity += SWITCH_POLL_DELAY_MS;
         }
         else if (!get_sw1())
