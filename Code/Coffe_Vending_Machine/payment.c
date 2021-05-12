@@ -28,6 +28,8 @@ INT8U balance;
 SemaphoreHandle_t balance_semaphore;
 
 QueueSetHandle_t cash_set;
+
+extern TaskHandle_t coffee_t;
 /*****************************   Functions   *******************************/
 /*****************************************************************************
  *   Input    :
@@ -55,7 +57,7 @@ void payment_task(void* pvParamters)
         switch (current_state)
         {
         case START:
-            //Lock semaphore
+            ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
             current_state = PAYMENT;
             break;
         case PAYMENT:
@@ -164,6 +166,7 @@ PAYMENT_STATES pin_check_state()
                                     == 0))
             {
                 balance = CARD_PREPAID;
+                xTaskNotifyGive(coffee_t);
                 ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
                 return LOG;
             }
