@@ -39,7 +39,7 @@ INT8U CoffeeTask_init;
 COFFEE_TYPE coffee_types[10];
 COFFEE_TYPE* current_coffee;
 
-SemaphoreHandle_t active_semaphore;
+static SemaphoreHandle_t active_semaphore;
 
 extern TaskHandle_t payment_t;
 /*****************************   Functions   *******************************/
@@ -65,6 +65,7 @@ void coffee_init()
     coffee_types[2] = filter_coffee;
 
     active_semaphore = xSemaphoreCreateBinary();
+    configASSERT(active_semaphore);
     xSemaphoreGive(active_semaphore);
 }
 
@@ -105,7 +106,7 @@ COFFEE_STATES select_coffee_state()
 
                 xTaskNotifyGive(payment_t);
 
-                xSemaphoreTake(active_semaphore, portMAX_DELAY);
+                //xSemaphoreTake(active_semaphore, portMAX_DELAY);
 
                 return BREW;
             }

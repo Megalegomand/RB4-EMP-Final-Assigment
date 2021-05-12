@@ -60,7 +60,6 @@ typedef struct {
 /*****************************   Functions   *******************************/
 void payment_init();
 void payment_task (void* pvParameters);
-TaskHandle_t* payment_taskhandle();
 PAYMENT_STATES paymenttype_state();
 PAYMENT_STATES cardnumber_check_state();
 PAYMENT_STATES pin_check_state();

@@ -39,7 +39,7 @@
 
 #define ESC		0x1B
 
-#define LCD_Q_LENGTH 100
+#define LCD_Q_LENGTH 200
 #define LCD_Q_WIDTH sizeof(INT8U)
 
 /*****************************   Constants   *******************************/

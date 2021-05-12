@@ -52,6 +52,7 @@ void digiswitch_init()
 
     // Create input queue
     ds_input_queue = xQueueCreate(DS_INPUT_QUEUE_LENGTH, DS_INPUT_QUEUE_WIDTH);
+    configASSERT(ds_input_queue);
 }
 
 void digiswitch_isr()
@@ -87,7 +88,7 @@ void digiswitch_isr()
             }
         }
 
-        xQueueSendToBack(ds_input_queue, &dir, portMAX_DELAY);
+        xQueueSendToBackFromISR(ds_input_queue, &dir, NULL);
 
         vTaskNotifyGiveFromISR(digiswitch_t, NULL);
     }

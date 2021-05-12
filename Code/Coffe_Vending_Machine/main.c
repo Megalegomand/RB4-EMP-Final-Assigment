@@ -29,8 +29,8 @@ void test_task(void* pvParameters)
         //sprintf(buffer, "%c%cOffset:", 0x1B, 0xA8);
 
         //wr_str_LCD(buffer);
-        //lprintf(0, "Wut");
-        //lprintf(1, "What? %c", msg);
+        lprintf(0, "Wut");
+        lprintf(1, "What? %c", msg);
         //uprintf(buf, "%i", dir);
     }
 }
@@ -76,13 +76,13 @@ int main(void)
     coffee_init();
 
     // Create tasks
-//    xTaskCreate(coffee_task, "Coffee task",
-//    configMINIMAL_STACK_SIZE,
-//                NULL, PRIORITY_LOW, NULL);
+    xTaskCreate(coffee_task, "Coffee task",
+    configMINIMAL_STACK_SIZE+50,
+                NULL, PRIORITY_LOW, NULL);
 
 
     xTaskCreate(payment_task, "Payment task",
-    configMINIMAL_STACK_SIZE,
+    configMINIMAL_STACK_SIZE + 50,
                 NULL, PRIORITY_LOW, &payment_t);
 
     xTaskCreate(uart0_write_task, "UART write task",
@@ -101,9 +101,9 @@ int main(void)
     configMINIMAL_STACK_SIZE,
                 NULL, PRIORITY_LOW, NULL);
 
-    //xTaskCreate(test_task, "Test task",
-    //configMINIMAL_STACK_SIZE + 100,
-    //            NULL, PRIORITY_LOW, NULL);
+    xTaskCreate(test_task, "Test task",
+    configMINIMAL_STACK_SIZE + 100,
+                NULL, PRIORITY_LOW, NULL);
 
     // Start scheduler
     vTaskStartScheduler();
