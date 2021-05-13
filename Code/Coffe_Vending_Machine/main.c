@@ -105,9 +105,13 @@ int main(void)
     configMINIMAL_STACK_SIZE,
                 NULL, PRIORITY_LOW, NULL);
 
-    xTaskCreate(test_task, "Test task",
-    configMINIMAL_STACK_SIZE + 100,
-                NULL, PRIORITY_LOW, NULL);
+    xTaskCreate(test_task, "Logger task",
+        configMINIMAL_STACK_SIZE + 100,
+                    NULL, PRIORITY_LOW, NULL);
+
+//    xTaskCreate(test_task, "Test task",
+//    configMINIMAL_STACK_SIZE + 100,
+//                NULL, PRIORITY_LOW, NULL);
 
     // Start scheduler
     vTaskStartScheduler();

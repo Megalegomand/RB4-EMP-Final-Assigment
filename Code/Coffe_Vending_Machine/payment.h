@@ -53,10 +53,6 @@
 #define CHANGE_FLASH_TIME_MS 500
 /***************** Variables ******************/
 typedef enum PAYMENT_STATES{START, PAYMENT, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATES;
-typedef struct {
-    INT8U balance;
-    INT8U cardnumber[8];
-} PAYMENT_TYPE;
 
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/

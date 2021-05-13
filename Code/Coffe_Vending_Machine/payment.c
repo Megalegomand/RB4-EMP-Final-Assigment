@@ -21,7 +21,7 @@
 /*****************************   Constants   *******************************/
 
 /*****************************   Variables   *******************************/
-PAYMENT_TYPE current_payment;
+INT8U cardnumber[CARD_LENGTH];
 extern QueueHandle_t ds_input_queue;
 
 INT8U balance;
@@ -128,7 +128,7 @@ PAYMENT_STATES cardnumber_check_state()
             INT8U inp = key_get(portMAX_DELAY);
             if (key2int(inp) != -1)
             {
-                current_payment.cardnumber[digit_counter] = key2int(inp);
+                cardnumber[digit_counter] = key2int(inp);
                 digit_counter++;
                 wr_ch_LCD(inp);
             }
@@ -165,10 +165,9 @@ PAYMENT_STATES pin_check_state()
         else
         {
             if ((pin[PIN_LENGTH - 1] % 2 == 0
-                    && current_payment.cardnumber[CARD_LENGTH - 1] % 2 != 0)
+                    && cardnumber[CARD_LENGTH - 1] % 2 != 0)
                     || (pin[PIN_LENGTH - 1] % 2 != 0
-                            && current_payment.cardnumber[CARD_LENGTH - 1] % 2
-                                    == 0))
+                            && cardnumber[CARD_LENGTH - 1] % 2 == 0))
             {
                 balance = CARD_PREPAID;
                 lprintf(1, "");
