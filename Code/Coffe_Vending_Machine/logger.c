@@ -52,6 +52,8 @@ void log_task(void* pvParameters)
         xQueueReceive(log_coffee_q, &coffee_type, portMAX_DELAY);
         xQueueReceive(log_payment_q, &payment_type, portMAX_DELAY);
 
+        xSemaphoreTake(log_array_semaphore, portMAX_DELAY);
+
         LOG_TYPE* log = log_nextlog();
 
         log->active = 1;
@@ -86,6 +88,8 @@ void log_task(void* pvParameters)
         configASSERT(num != -1);
 
         log->coffee_number = num;
+
+        xSemaphoreGive(log_array_semaphore);
     }
 }
 
@@ -108,6 +112,7 @@ LOG_TYPE* log_nextlog()
             return &log_array[i];
         }
     }
+    return NULL;
 }
 
 /********************************************** 

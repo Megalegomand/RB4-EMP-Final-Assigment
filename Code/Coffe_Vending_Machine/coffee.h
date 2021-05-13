@@ -29,7 +29,7 @@
 #include "task.h"
 #include "led.h"
 /*****************************    Defines    *******************************/
-#define COFFEE_TYPES_LENGTH     10 // Allows for one digit types
+#define COFFEE_TYPES_LENGTH     5 // Allows for one digit types
 #define COFFEE_CYCLE_TIME_MS    3000
 #define COFFEE_NAME_LENGTH      14
 

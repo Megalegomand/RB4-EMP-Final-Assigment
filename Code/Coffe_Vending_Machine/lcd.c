@@ -22,7 +22,7 @@
 
 /*****************************    Defines    *******************************/
 
-#define QUEUE_LEN   128
+#define QUEUE_LEN   32
 
 enum LCD_states
 {
@@ -254,7 +254,7 @@ void lprintf(INT16U line, const char * format, ... )
     move_LCD(0, line);
     va_list args;
     va_start(args, format);
-    INT8U len = vsprintf(buffer, format, args);
+    vsprintf(buffer, format, args);
     va_end(args);
     wr_str_LCD(buffer);
     return;

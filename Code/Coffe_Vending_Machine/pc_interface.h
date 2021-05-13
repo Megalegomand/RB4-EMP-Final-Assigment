@@ -16,11 +16,27 @@
 
 /***************** Header *********************/ 
 /***************** Include files **************/ 
+#include "logger.h"
+#include "uart0.h"
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
 /***************** Defines ********************/ 
 #ifndef PC_INTERFACE_H_
 #define PC_INTERFACE_H_
+
+#define ASCII_ESC 27
+
+typedef enum MENU
+{
+    MAIN_MENU, LOG_LIST
+} MENU;
 /***************** Variables ******************/ 
 /***************** Functions ******************/
+void ui_clear_screen();
+void ui_task(void* pvParameters);
+MENU main_menu();
+MENU log_list_menu();
 /********************************************** 
 * Input: 
 * Output: 

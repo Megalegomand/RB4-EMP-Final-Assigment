@@ -31,7 +31,7 @@
 #include "queue.h"
 #include "task.h"
 /*****************************    Defines    *******************************/
-#define UART_QUEUE_LENGTH 64
+#define UART_QUEUE_LENGTH 16
 #define UART_ITEM_SIZE    8
 /***************** Variables ******************/
 extern QueueHandle_t uart0_rx_queue;

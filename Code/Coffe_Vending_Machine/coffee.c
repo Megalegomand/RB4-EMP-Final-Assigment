@@ -27,8 +27,6 @@ typedef enum COFFEE_STATES
 /*****************************   Constants   *******************************/
 /*****************************   Variables   *******************************/
 //enum CoffeeTask_states CoffeeTask_state = Start;
-INT8U CoffeeTask_init;
-
 COFFEE_TYPE coffee_types[COFFEE_TYPES_LENGTH];
 SemaphoreHandle_t coffee_types_mutex;
 

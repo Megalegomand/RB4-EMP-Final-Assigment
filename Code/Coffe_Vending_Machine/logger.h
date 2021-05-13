@@ -16,6 +16,7 @@
 #ifndef LOGGER_H_
 #define LOGGER_H_
 /***************** Header *********************/ 
+#include "emp_type.h"
 #include "coffee.h"
 #include "payment.h"
 #include "FreeRTOS.h"
@@ -34,7 +35,7 @@ struct LOG_TYPE_S
     BOOLEAN active;
     INT8U coffee_number;
     INT8U price;
-    char payment_type[CARD_LENGTH];
+    char payment_type[CARD_LENGTH + 1]; // Allows for escape char
 };
 
 typedef struct LOG_TYPE_S LOG_TYPE;

@@ -86,8 +86,8 @@
  *
  * See http://www.freertos.org/a00110.html.
  *----------------------------------------------------------*/
-void vAssertCalled( const char *pcFileName, unsigned long ulLine );
-#define configASSERT( x ) if( ( x ) == 0 ) vAssertCalled( __FILE__, __LINE__ );
+
+#define configASSERT( x ) if( ( x ) == pdFALSE ) { taskDISABLE_INTERRUPTS(); while(1); }
 
 #define configUSE_PREEMPTION		1
 #define configUSE_IDLE_HOOK			0
@@ -116,6 +116,7 @@ void vAssertCalled( const char *pcFileName, unsigned long ulLine );
 #define configGENERATE_RUN_TIME_STATS	0
 #define configUSE_QUEUE_SETS            1
 //#define configUSE_TIMESLICING           1
+#define configCHECK_FOR_STACK_OVERFLOW          2
 
 /* Set the following definitions to 1 to include the API function, or zero
 to exclude the API function. */
