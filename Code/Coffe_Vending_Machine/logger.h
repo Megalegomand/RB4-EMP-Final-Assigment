@@ -34,7 +34,7 @@ struct LOG_TYPE_S
     BOOLEAN active;
     INT8U coffee_number;
     INT8U price;
-    INT8U payment_type[CARD_LENGTH];
+    char payment_type[CARD_LENGTH];
 };
 
 typedef struct LOG_TYPE_S LOG_TYPE;

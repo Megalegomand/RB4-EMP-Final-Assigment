@@ -60,20 +60,32 @@ void log_task(void* pvParameters)
         // Convert payment to string
         if (payment_type[0] == CASH_ID)
         {
-            strcpy(log->payment_type, "CASH    ");
+            strcpy(&log->payment_type, "CASH    ");
         }
         else
         {
             for (INT8U i = 0; i < CARD_LENGTH; i++)
             {
-                log->payment_type[i] = payment_type[i];
+                log->payment_type[i] = payment_type[i] + '0';
             }
         }
 
         // Get coffee number
-        for (INT8U i = 0; i < COFFEE_TYPES_LENGTH; i++) {
-
+        xSemaphoreTake(coffee_types_mutex, portMAX_DELAY);
+        INT8U num = -1;
+        for (INT8U i = 0; i < COFFEE_TYPES_LENGTH; i++)
+        {
+            if (!strcmp(coffee_types[i].name, coffee_type.name))
+            { // Names are equal
+                num = i;
+                break;
+            }
         }
+        xSemaphoreGive(coffee_types_mutex);
+
+        configASSERT(num != -1);
+
+        log->coffee_number = num;
     }
 }
 
@@ -84,7 +96,7 @@ void log_coffee(COFFEE_TYPE* coffee)
 
 void log_payment(INT8U* payment_type)
 {
-    xQueueSendToBack(log_payment_q, &payment_type, portMAX_DELAY);
+    xQueueSendToBack(log_payment_q, payment_type, portMAX_DELAY);
 }
 
 LOG_TYPE* log_nextlog()

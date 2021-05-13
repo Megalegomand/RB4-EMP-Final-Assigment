@@ -51,7 +51,6 @@ void coffee_init()
     xSemaphoreGive(coffee_types_mutex);
 
     // Init default coffee
-    xSemaphoreTake(coffee_types_mutex, portMAX_DELAY);
     COFFEE_TYPE espresso;
     espresso.active = 1;
     strcpy(espresso.name, "Espresso");
@@ -81,7 +80,6 @@ void coffee_init()
     filter_coffee.brew_time = 0.0f;
     filter_coffee.milk_time = 0.0f;
     coffee_types[2] = filter_coffee;
-    xSemaphoreGive(coffee_types_mutex);
 }
 
 COFFEE_STATES brew_state()
@@ -191,6 +189,8 @@ COFFEE_STATES brew_state()
     xSemaphoreTake(balance_mutex, portMAX_DELAY);
     balance -= ceil_price;
     xSemaphoreGive(balance_mutex);
+
+    current_coffee.price = ceil_price; // For logging
 
     xSemaphoreGive(active_semaphore);
 
