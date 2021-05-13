@@ -33,7 +33,6 @@
 /*****************************    Defines    *******************************/
 #define UART_QUEUE_LENGTH 64
 #define UART_ITEM_SIZE    8
-#define UPRINT_BUFFER     50
 /***************** Variables ******************/
 extern QueueHandle_t uart0_rx_queue;
 extern QueueHandle_t uart0_tx_queue;

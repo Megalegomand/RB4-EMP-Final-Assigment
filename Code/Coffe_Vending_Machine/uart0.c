@@ -97,56 +97,12 @@ INT32U lcrh_parity(INT8U parity)
     return (result);
 }
 
-void uart0_fifos_enable()
-/*****************************************************************************
- *   Input    :
- *   Output   :
- *   Function : Enable the tx and rx fifos
- ******************************************************************************/
-{
-    UART0_LCRH_R |= 0x00000010;
-}
-
-void uart0_fifos_disable()
-/*****************************************************************************
- *   Input    :
- *   Output   :
- *   Function : Enable the tx and rx fifos
- ******************************************************************************/
-{
-    UART0_LCRH_R &= 0xFFFFFFEF;
-}
-
-extern BOOLEAN uart0_rx_rdy()
-/*****************************************************************************
- *   Function : See module specification (.h-file).
- *****************************************************************************/
-{
-    return ( UART0_FR_R & UART_FR_RXFF);
-}
-
-extern INT8U uart0_getc()
-/*****************************************************************************
- *   Function : See module specification (.h-file).
- *****************************************************************************/
-{
-    return ( UART0_DR_R);
-}
-
 extern BOOLEAN uart0_tx_rdy()
 /*****************************************************************************
  *   Function : See module specification (.h-file).
  *****************************************************************************/
 {
     return ( UART0_FR_R & UART_FR_TXFE);
-}
-
-extern void uart0_putc(INT8U ch)
-/*****************************************************************************
- *   Function : See module specification (.h-file).
- *****************************************************************************/
-{
-    UART0_DR_R = ch;
 }
 
 extern void uart0_init(INT32U baud_rate, INT8U databits, INT8U stopbits,
@@ -237,9 +193,6 @@ void uart0_sendstring(char* c, INT8U length)
 {
     for (int i = 0; i < length; i++)
     {
-        while (!uart0_tx_rdy())
-        {
-        }
         xQueueSendToBack(uart0_tx_queue, &c[i], portMAX_DELAY);
     }
 }
