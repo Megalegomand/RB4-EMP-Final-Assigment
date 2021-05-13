@@ -29,7 +29,7 @@
 
 typedef enum MENU
 {
-    MAIN_MENU, LOG_LIST
+    MAIN_MENU, LOG_LIST, SALES_REPORT
 } MENU;
 /***************** Variables ******************/ 
 /***************** Functions ******************/
@@ -37,6 +37,7 @@ void ui_clear_screen();
 void ui_task(void* pvParameters);
 MENU main_menu();
 MENU log_list_menu();
+MENU sales_report_menu();
 /********************************************** 
 * Input: 
 * Output: 

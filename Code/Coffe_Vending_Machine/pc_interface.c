@@ -53,6 +53,9 @@ void ui_task(void *pvParameters)
         case LOG_LIST:
             current_menu = log_list_menu();
             break;
+        case SALES_REPORT:
+            current_menu = sales_report_menu();
+            break;
         }
     }
 }
@@ -63,6 +66,7 @@ MENU main_menu()
     uprintf(buffer, "----------------------\n\r");
     uprintf(buffer, "Select menu\n\r");
     uprintf(buffer, "1 - List logs\n\r");
+    uprintf(buffer, "2 - Sales report\n\r");
     uprintf(buffer, "----------------------\n\r");
 
     INT8U inp;
@@ -73,6 +77,8 @@ MENU main_menu()
         {
         case '1':
             return LOG_LIST;
+        case '2':
+            return SALES_REPORT;
         default:
             uprintf(buffer, "%c\n\rIncorrect input\n\r", inp);
             break;
@@ -97,6 +103,53 @@ MENU log_list_menu()
                     log_array[i].coffee_number,
                     coffee_types[log_array[i].coffee_number].name,
                     log_array[i].price, log_array[i].payment_type);
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    xSemaphoreGive(log_array_semaphore);
+    xSemaphoreGive(coffee_types_mutex);
+
+    uprintf(buffer, "Press any key to return\n\r");
+    INT16U inp = 0;
+    xQueueReceive(uart0_rx_queue, &inp, portMAX_DELAY);
+    uprintf(buffer, "%d", inp);
+
+    return MAIN_MENU;
+}
+
+MENU sales_report_menu()
+{
+    ui_clear_screen();
+    uprintf(buffer, "Coffee name   | Total sales\n\r");
+
+    xSemaphoreTake(log_array_semaphore, portMAX_DELAY);
+    xSemaphoreTake(coffee_types_mutex, portMAX_DELAY);
+
+    for (int i = 0; i < COFFEE_TYPES_LENGTH; i++)
+    {
+        if (coffee_types[i].active)
+        {
+            INT16U sum = 0;
+            for (int j = 0; j < LOG_LENGTH; j++)
+            {
+                if (log_array[j].active)
+                {
+                    if (i == log_array[j].coffee_number)
+                    {
+                        sum += log_array[j].price;
+                        break;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            uprintf(buffer, "%-14s| %d\n\r", coffee_types[i].name, sum);
         }
         else
         {
