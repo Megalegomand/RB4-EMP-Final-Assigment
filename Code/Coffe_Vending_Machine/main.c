@@ -26,14 +26,6 @@ TaskHandle_t coffee_t;
 #define PRIORITY_LOW 1
 #define PRIORITY_IDLE 0
 
-INT8U debugValue = 0;
-void vApplicationStackOverflowHook(TaskHandle_t xTask, signed char *pcTaskName)
-{
-    while (debugValue != 1)
-    {
-    }
-}
-
 int main(void){
     // Initialize
     uart0_init(19200, 8, 1, 0);

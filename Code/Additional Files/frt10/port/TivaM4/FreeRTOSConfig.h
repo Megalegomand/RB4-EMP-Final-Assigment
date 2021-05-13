@@ -116,7 +116,6 @@
 #define configGENERATE_RUN_TIME_STATS	0
 #define configUSE_QUEUE_SETS            1
 //#define configUSE_TIMESLICING           1
-#define configCHECK_FOR_STACK_OVERFLOW          2
 
 /* Set the following definitions to 1 to include the API function, or zero
 to exclude the API function. */

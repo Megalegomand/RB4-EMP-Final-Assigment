@@ -178,7 +178,7 @@ COFFEE_STATES brew_state()
         vTaskDelay(pdMS_TO_TICKS(SWITCH_POLL_DELAY_MS));
     }
 
-    while (get_sw1())
+    while (get_sw2())
     {
         lprintf(0, "Remove cup");
         vTaskDelay(pdMS_TO_TICKS(SWITCH_POLL_DELAY_MS));
