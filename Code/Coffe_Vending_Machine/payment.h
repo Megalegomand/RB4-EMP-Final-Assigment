@@ -37,6 +37,7 @@
 #include "lcd.h"
 #include "semphr.h"
 #include "queue.h"
+#include "led.h"
 /*****************************    Defines    *******************************/
 #ifndef PAYMENT_H_
 #define PAYMENT_H_
@@ -46,9 +47,10 @@
 #define CARD_LENGTH 8
 #define PIN_LENGTH 4
 #define CARD_MAX_ATTEMPTS 3
-#define CARD_PREPAID 20
+#define CARD_PREPAID 30
 #define CASH_CLOCKWISE 10
 #define CASH_COUNTERCLOCKWISE 5
+#define CHANGE_FLASH_TIME_MS 500
 /***************** Variables ******************/
 typedef enum PAYMENT_STATES{START, PAYMENT, CARD, CASH, CARD_NUMBER, PIN, LOG, CHANGE} PAYMENT_STATES;
 typedef struct {

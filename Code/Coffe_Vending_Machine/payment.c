@@ -30,6 +30,8 @@ SemaphoreHandle_t balance_semaphore;
 QueueSetHandle_t cash_set;
 
 extern TaskHandle_t coffee_t;
+
+extern SemaphoreHandle_t active_semaphore;
 /*****************************   Functions   *******************************/
 /*****************************************************************************
  *   Input    :
@@ -37,7 +39,8 @@ extern TaskHandle_t coffee_t;
  *   Function :
  ******************************************************************************/
 
-void payment_init() {
+void payment_init()
+{
     balance_semaphore = xSemaphoreCreateMutex();
     xSemaphoreGive(balance_semaphore);
 
@@ -49,7 +52,9 @@ void payment_task(void* pvParamters)
 {
     PAYMENT_STATES current_state = START;
 
-    xQueueAddToSet(ds_input_queue, cash_set);
+    configASSERT(xQueueAddToSet(ds_input_queue, cash_set) == pdPASS);
+    configASSERT(xQueueAddToSet(active_semaphore, cash_set) == pdPASS);
+    xSemaphoreGive(active_semaphore);
 
     while (1)
     {
@@ -166,8 +171,21 @@ PAYMENT_STATES pin_check_state()
                                     == 0))
             {
                 balance = CARD_PREPAID;
-                xTaskNotifyGive(coffee_t);
-                ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+                lprintf(1, "");
+                xTaskNotifyGive(coffee_t); // Start brewing
+
+                while (1)
+                {
+                    xQueueSelectFromSet(cash_set, portMAX_DELAY); // Wait for brew
+
+                    if (xSemaphoreTake(active_semaphore, 0) == pdPASS)
+                    {
+                        xSemaphoreGive(active_semaphore);
+                        break;
+                    }
+                }
+
+                xTaskNotifyGive(coffee_t); // Restart
                 return LOG;
             }
             else
@@ -207,13 +225,17 @@ PAYMENT_STATES cash_state()
 
     lprintf(0, "Insert cash");
 
+    xTaskNotifyGive(coffee_t); // Start brew
+
     while (1)
     {
         xSemaphoreTake(balance_semaphore, portMAX_DELAY);
         INT8S dir = 0;
-        do {
+        do
+        {
             dir = digiswitch_get(0);
-            switch (dir) {
+            switch (dir)
+            {
             case 1:
                 balance += CASH_CLOCKWISE;
                 break;
@@ -221,41 +243,43 @@ PAYMENT_STATES cash_state()
                 balance += CASH_COUNTERCLOCKWISE;
                 break;
             }
-        } while (dir != 0);
+        }
+        while (dir != 0);
 
-        lprintf(1, "%ikr", balance);
+        lprintf(1, "Balance: %ikr", balance);
 
         xSemaphoreGive(balance_semaphore);
 
         xQueueSelectFromSet(cash_set, portMAX_DELAY);
+
+        if (xSemaphoreTake(active_semaphore, 0) == pdPASS)
+        {
+            xSemaphoreGive(active_semaphore);
+            break;
+        }
     }
+
+    return CHANGE;
 }
 
 PAYMENT_STATES change_state()
 {
-    INT8U difference;
-    INT8U i;
+    xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+    lprintf(0, "Change: %d", balance);
+    lprintf(1, "");
 
-    while (1)
+    for (int i = 0; i < balance; i++)
     {
-        if (0) //current_payment.balance > coffee.price)
-        {
-            difference = 0; //current_payment.balance - coffee.price;
-            while (i <= difference)
-            {
-                // difference out on LCD
-                // flash yellow led
-                // delay
-                i++;
-            }
-
-        }
-        else
-        {
-            return LOG;
-        }
+        led_yellow();
+        vTaskDelay(pdMS_TO_TICKS(CHANGE_FLASH_TIME_MS));
+        led_off();
+        vTaskDelay(pdMS_TO_TICKS(CHANGE_FLASH_TIME_MS));
     }
+    xSemaphoreGive(balance_semaphore);
 
+    xTaskNotifyGive(coffee_t);
+
+    return LOG;
 }
 
 PAYMENT_STATES log_state()

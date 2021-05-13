@@ -29,6 +29,10 @@ typedef struct
     BOOLEAN active;
     char name[14]; // Allows it to be displayed
     INT8U price;
+    BOOLEAN amount_pay;
+    FP32 grind_time;
+    FP32 brew_time;
+    FP32 milk_time;
 } COFFEE_TYPE;
 
 /*****************************   Constants   *******************************/
@@ -37,11 +41,14 @@ typedef struct
 INT8U CoffeeTask_init;
 
 COFFEE_TYPE coffee_types[10];
-COFFEE_TYPE* current_coffee;
+COFFEE_TYPE current_coffee;
 
-static SemaphoreHandle_t active_semaphore;
+SemaphoreHandle_t active_semaphore;
 
 extern TaskHandle_t payment_t;
+
+extern INT8U balance;
+extern SemaphoreHandle_t balance_semaphore;
 /*****************************   Functions   *******************************/
 
 void coffee_init()
@@ -50,40 +57,137 @@ void coffee_init()
     espresso.active = 1;
     strcpy(espresso.name, "Espresso");
     espresso.price = 15;
+    espresso.amount_pay = 0;
+    espresso.grind_time = 5.0f;
+    espresso.brew_time = 15.0f;
+    espresso.milk_time = 0.0f;
     coffee_types[0] = espresso;
 
     COFFEE_TYPE cappuccino;
     cappuccino.active = 1;
     strcpy(cappuccino.name, "Cappuccino");
     cappuccino.price = 24;
+    cappuccino.amount_pay = 0;
+    cappuccino.grind_time = 5.0f;
+    cappuccino.brew_time = 15.0f;
+    cappuccino.milk_time = 3.0f;
     coffee_types[1] = cappuccino;
 
     COFFEE_TYPE filter_coffee;
     filter_coffee.active = 1;
     strcpy(filter_coffee.name, "Filter coffee");
     filter_coffee.price = 1;
+    filter_coffee.amount_pay = 1;
+    filter_coffee.grind_time = 0.0f;
+    filter_coffee.brew_time = 0.0f;
+    filter_coffee.milk_time = 0.0f;
     coffee_types[2] = filter_coffee;
 
     active_semaphore = xSemaphoreCreateBinary();
     configASSERT(active_semaphore);
-    xSemaphoreGive(active_semaphore);
 }
 
 COFFEE_STATES brew_state()
 {
-    while (1) {
-        if (!get_sw1()) {
-            lprintf(0, "Place cup");
-        } else if (!get_sw2()) {
-            lprintf(0, "Press start");
-        } else {
+    FP32 price = (current_coffee.amount_pay ? 0.0f : current_coffee.price * 1.0f);
+    FP32 slow_dispense = SLOW_DISPENSE_TIME_MS;
+    INT8U balance_t = 0;
+    INT8U ceil_price = (INT8U) price + 0.5f;
+    FP32 inactivity = 0.0f;
+
+    while (1)
+    {
+        led_off();
+
+        xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+        balance_t = balance;
+        xSemaphoreGive(balance_semaphore);
+
+        if (inactivity > MAX_INACTIVITY_MS)
+        {
             break;
+        }
+        else if (ceil_price >= balance_t)
+        {
+            lprintf(0, "Insert more cash");
+            inactivity += SWITCH_POLL_DELAY_MS;
+        }
+        else if (!get_sw1())
+        {
+            lprintf(0, "Place cup");
+            inactivity += SWITCH_POLL_DELAY_MS;
+        }
+        else if (!get_sw2())
+        {
+            lprintf(0, "Press start");
+            inactivity += SWITCH_POLL_DELAY_MS;
+        }
+        else
+        {
+            inactivity = 0.0f;
+            if (current_coffee.amount_pay)
+            {
+                FP32 dispense_mult = 0.0f;
+                if (slow_dispense >= 0.0f)
+                {
+                    slow_dispense -= SWITCH_POLL_DELAY_MS * 1.0f;
+                    dispense_mult = SLOW_DISPENSE_AMOUNT;
+                }
+                else
+                {
+                    dispense_mult = FAST_DISPENSE_AMOUNT;
+                }
+                price += (SWITCH_POLL_DELAY_MS / 1000.0f) * current_coffee.price
+                        * dispense_mult;
+                ceil_price = (INT8U) price + 0.5f;
+                led_yellow();
+                lprintf(0, "Price: %dkr", ceil_price); // Round up price
+            }
+            else
+            {
+                if (current_coffee.grind_time > 0.0f)
+                {
+                    led_red();
+                    lprintf(0, "Grinding...");
+                    current_coffee.grind_time -= SWITCH_POLL_DELAY_MS / 1000.0f;
+                }
+                else if (current_coffee.brew_time > 0.0f)
+                {
+                    led_yellow();
+                    lprintf(0, "Brewing...");
+                    current_coffee.brew_time -= SWITCH_POLL_DELAY_MS / 1000.0f;
+                }
+                else if (current_coffee.milk_time > 0.0f)
+                {
+                    led_green();
+                    lprintf(0, "Milk froth...");
+                    current_coffee.milk_time -= SWITCH_POLL_DELAY_MS / 1000.0f;
+                }
+                else
+                {
+                    break;
+                }
+            }
         }
         // Poll switches, this causes the screen to blink
         // to make sure the text is read
         // Definitely a feature and not laziness
         vTaskDelay(pdMS_TO_TICKS(SWITCH_POLL_DELAY_MS));
     }
+
+    while (get_sw1())
+    {
+        lprintf(0, "Remove cup");
+        vTaskDelay(pdMS_TO_TICKS(SWITCH_POLL_DELAY_MS));
+    }
+
+    xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+    balance -= ceil_price;
+    xSemaphoreGive(balance_semaphore);
+
+    xSemaphoreGive(active_semaphore);
+
+    ulTaskNotifyTake(pdTRUE, portMAX_DELAY); // Wait for change
 
     return C_LOG;
 }
@@ -98,7 +202,7 @@ COFFEE_STATES select_coffee_state()
     {
         do
         {
-            if (num < COFFEE_TYPES_LENGTH)
+            if (num < COFFEE_TYPES_LENGTH-1)
             {
                 num++;
             }
@@ -116,11 +220,11 @@ COFFEE_STATES select_coffee_state()
         {
             if (coffee_types[inp].active)
             {
-                current_coffee = &coffee_types[inp];
+                current_coffee = coffee_types[inp];
 
                 xTaskNotifyGive(payment_t);
 
-                //xSemaphoreTake(active_semaphore, portMAX_DELAY);
+                xSemaphoreTake(active_semaphore, portMAX_DELAY);
 
                 return BREW;
             }
@@ -143,7 +247,7 @@ void coffee_task(void *pvParameters)
             current_state = brew_state();
             break;
         case C_LOG:
-            current_state = 1;
+            current_state = SELECT_COFFEE;
             break;
 
         }
