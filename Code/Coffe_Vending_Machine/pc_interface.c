@@ -110,7 +110,7 @@ MENU log_list_menu()
     uprintf(buffer, "Press any key to return\n\r");
     INT8U inp;
     xQueueReceive(uart0_rx_queue, &inp, portMAX_DELAY);
-    uprintf(buffer, "");
+    uprintf(buffer, ""); // This makes it work, line above has some memory leak
 
     return MAIN_MENU;
 }

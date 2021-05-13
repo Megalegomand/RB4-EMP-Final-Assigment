@@ -109,7 +109,7 @@ COFFEE_STATES brew_state()
                 inactivity += SWITCH_POLL_DELAY_MS;
             }
         }
-        else if (!get_sw1())
+        else if (!get_sw2())
         {
             lprintf(0, "Place cup");
             if (price != 0.0f && current_coffee.amount_pay)
@@ -117,7 +117,7 @@ COFFEE_STATES brew_state()
                 inactivity += SWITCH_POLL_DELAY_MS;
             }
         }
-        else if (!get_sw2())
+        else if (!get_sw1())
         {
             lprintf(0, "Hold start");
             if (price != 0.0f && current_coffee.amount_pay)
