@@ -24,23 +24,12 @@ typedef enum COFFEE_STATES
     SELECT_COFFEE, BREW, C_LOG,
 } COFFEE_STATES;
 
-typedef struct
-{
-    BOOLEAN active;
-    char name[14]; // Allows it to be displayed
-    INT8U price;
-    BOOLEAN amount_pay;
-    FP32 grind_time;
-    FP32 brew_time;
-    FP32 milk_time;
-} COFFEE_TYPE;
-
 /*****************************   Constants   *******************************/
 /*****************************   Variables   *******************************/
 //enum CoffeeTask_states CoffeeTask_state = Start;
 INT8U CoffeeTask_init;
 
-COFFEE_TYPE coffee_types[10];
+COFFEE_TYPE coffee_types[COFFEE_TYPES_LENGTH];
 COFFEE_TYPE current_coffee;
 
 SemaphoreHandle_t active_semaphore;
@@ -62,6 +51,7 @@ void coffee_init()
     espresso.brew_time = 15.0f;
     espresso.milk_time = 0.0f;
     coffee_types[0] = espresso;
+
 
     COFFEE_TYPE cappuccino;
     cappuccino.active = 1;

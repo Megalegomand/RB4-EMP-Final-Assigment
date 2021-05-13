@@ -22,13 +22,24 @@
 #include "queue.h"
 /***************** Include files **************/ 
 /***************** Defines ********************/ 
+typedef struct COFFEE_TYPE_S COFFEE_TYPE;
+
+struct LOG_TYPE_S
+{
+    BOOLEAN active;
+    INT8U coffee_number;
+    INT8U price;
+    INT8U payment_type[8];
+};
+
+typedef struct LOG_TYPE_S LOG_TYPE;
 /***************** Variables ******************/ 
 /***************** Functions ******************/
 void log_init();
 void log_task(void* pvParameters);
-//void log_coffee(COFFEE_TYPE coffee);
+void log_coffee(COFFEE_TYPE* coffee);
 void log_payment(INT8U* payment);
-
+LOG_TYPE* log_nextlog();
 /********************************************** 
 * Input: 
 * Output: 
