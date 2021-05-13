@@ -84,7 +84,7 @@ MENU log_list_menu()
 {
     ui_clear_screen();
     uprintf(buffer,
-            "Order no. | Coffee no. | Coffee name | Price | Payment type\n\r");
+            "Order no. | Coffee no. | Coffee name   | Price | Payment type\n\r");
 
     xSemaphoreTake(log_array_semaphore, portMAX_DELAY);
     xSemaphoreTake(coffee_types_mutex, portMAX_DELAY);
@@ -93,7 +93,7 @@ MENU log_list_menu()
     {
         if (log_array[i].active)
         {
-            uprintf(buffer, "%d | %d | %s | %d \n\r", i,
+            uprintf(buffer, "%-10d| %-11d| %-14s| %-6d| %s\n\r", i,
                     log_array[i].coffee_number,
                     coffee_types[log_array[i].coffee_number].name,
                     log_array[i].price, log_array[i].payment_type);
@@ -108,9 +108,9 @@ MENU log_list_menu()
     xSemaphoreGive(coffee_types_mutex);
 
     uprintf(buffer, "Press any key to return\n\r");
-    INT8U inp;
+    INT16U inp = 0;
     xQueueReceive(uart0_rx_queue, &inp, portMAX_DELAY);
-    uprintf(buffer, ""); // This makes it work, line above has some memory leak
+    uprintf(buffer, "%d", inp);
 
     return MAIN_MENU;
 }
