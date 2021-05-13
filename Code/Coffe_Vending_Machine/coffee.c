@@ -30,6 +30,8 @@ typedef enum COFFEE_STATES
 INT8U CoffeeTask_init;
 
 COFFEE_TYPE coffee_types[COFFEE_TYPES_LENGTH];
+SemaphoreHandle_t coffee_types_mutex;
+
 COFFEE_TYPE current_coffee;
 
 SemaphoreHandle_t active_semaphore;
@@ -37,11 +39,19 @@ SemaphoreHandle_t active_semaphore;
 extern TaskHandle_t payment_t;
 
 extern INT8U balance;
-extern SemaphoreHandle_t balance_semaphore;
+extern SemaphoreHandle_t balance_mutex;
 /*****************************   Functions   *******************************/
 
 void coffee_init()
 {
+    active_semaphore = xSemaphoreCreateBinary();
+    configASSERT(active_semaphore);
+
+    coffee_types_mutex = xSemaphoreCreateMutex();
+    xSemaphoreGive(coffee_types_mutex);
+
+    // Init default coffee
+    xSemaphoreTake(coffee_types_mutex, portMAX_DELAY);
     COFFEE_TYPE espresso;
     espresso.active = 1;
     strcpy(espresso.name, "Espresso");
@@ -51,7 +61,6 @@ void coffee_init()
     espresso.brew_time = 15.0f;
     espresso.milk_time = 0.0f;
     coffee_types[0] = espresso;
-
 
     COFFEE_TYPE cappuccino;
     cappuccino.active = 1;
@@ -72,9 +81,7 @@ void coffee_init()
     filter_coffee.brew_time = 0.0f;
     filter_coffee.milk_time = 0.0f;
     coffee_types[2] = filter_coffee;
-
-    active_semaphore = xSemaphoreCreateBinary();
-    configASSERT(active_semaphore);
+    xSemaphoreGive(coffee_types_mutex);
 }
 
 COFFEE_STATES brew_state()
@@ -90,9 +97,9 @@ COFFEE_STATES brew_state()
     {
         led_off();
 
-        xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+        xSemaphoreTake(balance_mutex, portMAX_DELAY);
         balance_t = balance;
-        xSemaphoreGive(balance_semaphore);
+        xSemaphoreGive(balance_mutex);
 
         if (inactivity > MAX_INACTIVITY_MS)
         {
@@ -100,7 +107,7 @@ COFFEE_STATES brew_state()
         }
         else if (ceil_price >= balance_t)
         {
-            lprintf(0, "Insert more cash");
+            lprintf(0, "Insert coins");
             if (price != 0.0f && current_coffee.amount_pay)
             {
                 inactivity += SWITCH_POLL_DELAY_MS;
@@ -181,9 +188,9 @@ COFFEE_STATES brew_state()
         vTaskDelay(pdMS_TO_TICKS(SWITCH_POLL_DELAY_MS));
     }
 
-    xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+    xSemaphoreTake(balance_mutex, portMAX_DELAY);
     balance -= ceil_price;
-    xSemaphoreGive(balance_semaphore);
+    xSemaphoreGive(balance_mutex);
 
     xSemaphoreGive(active_semaphore);
 
@@ -200,6 +207,7 @@ COFFEE_STATES select_coffee_state()
 
     while (1)
     {
+        xSemaphoreTake(coffee_types_mutex, portMAX_DELAY);
         do
         {
             if (num < COFFEE_TYPES_LENGTH - 1)
@@ -226,9 +234,11 @@ COFFEE_STATES select_coffee_state()
 
                 xSemaphoreTake(active_semaphore, portMAX_DELAY);
 
+                xSemaphoreGive(coffee_types_mutex);
                 return BREW;
             }
         }
+        xSemaphoreGive(coffee_types_mutex);
     }
 }
 
@@ -247,6 +257,7 @@ void coffee_task(void *pvParameters)
             current_state = brew_state();
             break;
         case C_LOG:
+            log_coffee(&current_coffee);
             current_state = SELECT_COFFEE;
             break;
 

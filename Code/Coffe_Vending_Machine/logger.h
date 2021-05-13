@@ -22,6 +22,11 @@
 #include "queue.h"
 /***************** Include files **************/ 
 /***************** Defines ********************/ 
+#define LOG_INPUT_LENGTH    1
+#define LOG_COFFEE_WIDTH    sizeof(COFFEE_TYPE)
+#define LOG_PAYMENT_WIDTH   sizeof(INT8U)*CARD_LENGTH
+#define LOG_LENGTH          10
+
 typedef struct COFFEE_TYPE_S COFFEE_TYPE;
 
 struct LOG_TYPE_S
@@ -29,7 +34,7 @@ struct LOG_TYPE_S
     BOOLEAN active;
     INT8U coffee_number;
     INT8U price;
-    INT8U payment_type[8];
+    INT8U payment_type[CARD_LENGTH];
 };
 
 typedef struct LOG_TYPE_S LOG_TYPE;

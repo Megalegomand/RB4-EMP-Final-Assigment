@@ -25,7 +25,7 @@ INT8U cardnumber[CARD_LENGTH];
 extern QueueHandle_t ds_input_queue;
 
 INT8U balance;
-SemaphoreHandle_t balance_semaphore;
+SemaphoreHandle_t balance_mutex;
 
 QueueSetHandle_t cash_set;
 
@@ -41,8 +41,8 @@ extern SemaphoreHandle_t active_semaphore;
 
 void payment_init()
 {
-    balance_semaphore = xSemaphoreCreateMutex();
-    xSemaphoreGive(balance_semaphore);
+    balance_mutex = xSemaphoreCreateMutex();
+    xSemaphoreGive(balance_mutex);
 
     // Set cotaining digiswtich input queue and coffee select semaphore
     cash_set = xQueueCreateSet(DS_INPUT_QUEUE_LENGTH + 1);
@@ -84,7 +84,8 @@ void payment_task(void* pvParamters)
             current_state = change_state();
             break;
         case LOG:
-            current_state = log_state();
+            log_payment(cardnumber);
+            current_state = START;
             break;
         }
     }
@@ -218,17 +219,17 @@ INT8S key2int(INT8U key)
 
 PAYMENT_STATES cash_state()
 {
-    xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+    xSemaphoreTake(balance_mutex, portMAX_DELAY);
     balance = 0;
-    xSemaphoreGive(balance_semaphore);
+    xSemaphoreGive(balance_mutex);
 
-    lprintf(0, "Insert cash");
+    lprintf(0, "Insert coins");
 
     xTaskNotifyGive(coffee_t); // Start brew
 
     while (1)
     {
-        xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+        xSemaphoreTake(balance_mutex, portMAX_DELAY);
         INT8S dir = 0;
         do
         {
@@ -247,7 +248,7 @@ PAYMENT_STATES cash_state()
 
         lprintf(1, "Balance: %ikr", balance);
 
-        xSemaphoreGive(balance_semaphore);
+        xSemaphoreGive(balance_mutex);
 
         xQueueSelectFromSet(cash_set, portMAX_DELAY);
 
@@ -263,7 +264,7 @@ PAYMENT_STATES cash_state()
 
 PAYMENT_STATES change_state()
 {
-    xSemaphoreTake(balance_semaphore, portMAX_DELAY);
+    xSemaphoreTake(balance_mutex, portMAX_DELAY);
     lprintf(0, "Change: %d", balance);
     lprintf(1, "");
 
@@ -274,7 +275,7 @@ PAYMENT_STATES change_state()
         led_off();
         vTaskDelay(pdMS_TO_TICKS(CHANGE_FLASH_TIME_MS));
     }
-    xSemaphoreGive(balance_semaphore);
+    xSemaphoreGive(balance_mutex);
 
     xTaskNotifyGive(coffee_t);
 
@@ -284,12 +285,4 @@ PAYMENT_STATES change_state()
     return LOG;
 }
 
-PAYMENT_STATES log_state()
-{
-    while (1)
-    {
-        log_payment(cardnumber);
-        return START;
-    }
-}
 

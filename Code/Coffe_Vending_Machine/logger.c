@@ -18,10 +18,6 @@
 /***************** Include files **************/
 #include "logger.h"
 /***************** Defines ********************/
-#define LOG_INPUT_LENGTH    1
-#define LOG_COFFEE_WIDTH    sizeof(COFFEE_TYPE)
-#define LOG_PAYMENT_WIDTH   sizeof(INT8U)*CARD_LENGTH
-#define LOG_LENGTH          10
 /***************** Constants ******************/
 /***************** Variables ******************/
 QueueHandle_t log_coffee_q;
@@ -29,6 +25,9 @@ QueueHandle_t log_payment_q;
 
 LOG_TYPE log_array[LOG_LENGTH];
 SemaphoreHandle_t log_array_semaphore;
+
+extern COFFEE_TYPE coffee_types[COFFEE_TYPES_LENGTH];
+extern SemaphoreHandle_t coffee_types_mutex;
 /***************** Functions ******************/
 void log_init()
 {
@@ -46,14 +45,35 @@ void log_init()
 
 void log_task(void* pvParameters)
 {
-    COFFEE_TYPE* coffee_type;
-    INT8U* payment_type;
+    COFFEE_TYPE coffee_type;
+    INT8U payment_type[CARD_LENGTH];
     while (1)
     {
         xQueueReceive(log_coffee_q, &coffee_type, portMAX_DELAY);
         xQueueReceive(log_payment_q, &payment_type, portMAX_DELAY);
 
         LOG_TYPE* log = log_nextlog();
+
+        log->active = 1;
+        log->price = coffee_type.price;
+
+        // Convert payment to string
+        if (payment_type[0] == CASH_ID)
+        {
+            strcpy(log->payment_type, "CASH    ");
+        }
+        else
+        {
+            for (INT8U i = 0; i < CARD_LENGTH; i++)
+            {
+                log->payment_type[i] = payment_type[i];
+            }
+        }
+
+        // Get coffee number
+        for (INT8U i = 0; i < COFFEE_TYPES_LENGTH; i++) {
+
+        }
     }
 }
 
@@ -64,12 +84,15 @@ void log_coffee(COFFEE_TYPE* coffee)
 
 void log_payment(INT8U* payment_type)
 {
-    xQueueSendToBack(log_coffee_q, &payment_type, portMAX_DELAY);
+    xQueueSendToBack(log_payment_q, &payment_type, portMAX_DELAY);
 }
 
-LOG_TYPE* log_nextlog() {
-    for (int i = 0; i < LOG_LENGTH; i++) {
-        if (!log_array[i].active) {
+LOG_TYPE* log_nextlog()
+{
+    for (int i = 0; i < LOG_LENGTH; i++)
+    {
+        if (!log_array[i].active)
+        {
             return &log_array[i];
         }
     }

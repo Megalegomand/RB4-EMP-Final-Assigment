@@ -23,8 +23,7 @@
  * 090215  MoH   Module created.
  *
  *****************************************************************************/
-#ifndef PAYMENT_H_
-#define PAYMENT_H_
+
 /***************************** Include files *******************************/
 #include <stdint.h>
 #include <stdlib.h>
@@ -48,6 +47,9 @@
 #define CASH_COUNTERCLOCKWISE   5
 #define CASH_ID                 10
 #define CHANGE_FLASH_TIME_MS    500
+
+#ifndef PAYMENT_H_
+#define PAYMENT_H_
 /***************** Variables ******************/
 typedef enum PAYMENT_STATES
 {
@@ -63,7 +65,6 @@ PAYMENT_STATES cardnumber_check_state();
 PAYMENT_STATES pin_check_state();
 PAYMENT_STATES cash_state();
 PAYMENT_STATES change_state();
-PAYMENT_STATES log_state();
 INT8S key2int(INT8U key);
 /*****************************************************************************
  *   Input    : INT8U
