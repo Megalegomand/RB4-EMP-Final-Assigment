@@ -278,6 +278,9 @@ PAYMENT_STATES change_state()
 
     xTaskNotifyGive(coffee_t);
 
+    // Show the logger its a cash payment
+    cardnumber[0] = CASH_ID;
+
     return LOG;
 }
 
@@ -285,7 +288,7 @@ PAYMENT_STATES log_state()
 {
     while (1)
     {
-        // log data til pc
+        log_payment(cardnumber);
         return START;
     }
 }

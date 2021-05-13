@@ -13,7 +13,8 @@
 * 13 May 2021 PO Module created. 
 * 
 ***********************************************/
-
+#ifndef LOGGER_H_
+#define LOGGER_H_
 /***************** Header *********************/ 
 #include "coffee.h"
 #include "payment.h"
@@ -21,12 +22,13 @@
 #include "queue.h"
 /***************** Include files **************/ 
 /***************** Defines ********************/ 
-#ifndef LOGGER_H_
-#define LOGGER_H_
 /***************** Variables ******************/ 
 /***************** Functions ******************/
-void logger_task(void* pvParameters);
-void log_coffee();
+void log_init();
+void log_task(void* pvParameters);
+//void log_coffee(COFFEE_TYPE coffee);
+void log_payment(INT8U* payment);
+
 /********************************************** 
 * Input: 
 * Output: 

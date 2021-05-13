@@ -13,6 +13,7 @@
 #include "payment.h"
 #include "coffee.h"
 #include "led.h"
+#include "logger.h"
 
 extern QueueHandle_t uart0_rx_queue;
 void test_task(void* pvParameters)
@@ -79,6 +80,7 @@ int main(void)
     switch_init();
     led_init();
     led_off();
+    log_init();
 
     // Create tasks
     xTaskCreate(coffee_task, "Coffee task",
@@ -105,9 +107,9 @@ int main(void)
     configMINIMAL_STACK_SIZE,
                 NULL, PRIORITY_LOW, NULL);
 
-    xTaskCreate(test_task, "Logger task",
-        configMINIMAL_STACK_SIZE + 100,
-                    NULL, PRIORITY_LOW, NULL);
+//    xTaskCreate(log_task, "Logger task",
+//        configMINIMAL_STACK_SIZE + 100,
+//                    NULL, PRIORITY_LOW, NULL);
 
 //    xTaskCreate(test_task, "Test task",
 //    configMINIMAL_STACK_SIZE + 100,

@@ -16,7 +16,8 @@
 * 090215  MoH   Module created.
 *
 *****************************************************************************/
-
+#ifndef COFFEE_H_
+#define COFFEE_H_
 /***************************** Include files *******************************/
 #include <stdint.h>
 #include "tm4c123gh6pm.h"
@@ -28,9 +29,6 @@
 #include "task.h"
 #include "led.h"
 /*****************************    Defines    *******************************/
-#ifndef COFFEE_H_
-#define COFFEE_H_
-
 #define COFFEE_TYPES_LENGTH 10 // Allows for one digit types
 #define COFFEE_CYCLE_TIME_MS 3000
 
@@ -45,7 +43,5 @@
 void coffee_init();
 
 void coffee_task(void *pvParameters);
-
-
 
 #endif /* COFFEE_H_ */

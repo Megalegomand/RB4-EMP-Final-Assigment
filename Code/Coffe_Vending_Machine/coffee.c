@@ -89,7 +89,8 @@ void coffee_init()
 
 COFFEE_STATES brew_state()
 {
-    FP32 price = (current_coffee.amount_pay ? 0.0f : current_coffee.price * 1.0f);
+    FP32 price =
+            (current_coffee.amount_pay ? 0.0f : current_coffee.price * 1.0f);
     FP32 slow_dispense = SLOW_DISPENSE_TIME_MS;
     INT8U balance_t = 0;
     INT8U ceil_price = (INT8U) price + 0.5f;
@@ -110,17 +111,26 @@ COFFEE_STATES brew_state()
         else if (ceil_price >= balance_t)
         {
             lprintf(0, "Insert more cash");
-            inactivity += SWITCH_POLL_DELAY_MS;
+            if (price != 0.0f && current_coffee.amount_pay)
+            {
+                inactivity += SWITCH_POLL_DELAY_MS;
+            }
         }
         else if (!get_sw1())
         {
             lprintf(0, "Place cup");
-            inactivity += SWITCH_POLL_DELAY_MS;
+            if (price != 0.0f && current_coffee.amount_pay)
+            {
+                inactivity += SWITCH_POLL_DELAY_MS;
+            }
         }
         else if (!get_sw2())
         {
-            lprintf(0, "Press start");
-            inactivity += SWITCH_POLL_DELAY_MS;
+            lprintf(0, "Hold start");
+            if (price != 0.0f && current_coffee.amount_pay)
+            {
+                inactivity += SWITCH_POLL_DELAY_MS;
+            }
         }
         else
         {
@@ -202,7 +212,7 @@ COFFEE_STATES select_coffee_state()
     {
         do
         {
-            if (num < COFFEE_TYPES_LENGTH-1)
+            if (num < COFFEE_TYPES_LENGTH - 1)
             {
                 num++;
             }
