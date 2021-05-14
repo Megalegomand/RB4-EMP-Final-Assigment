@@ -29,6 +29,11 @@ QueueHandle_t ds_input_queue;
  * Function:
  ***********************************************/
 
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Initialize digiswitch
+ ******************************************************************************/
 void digiswitch_init()
 {
     int dummy;
@@ -55,6 +60,11 @@ void digiswitch_init()
     configASSERT(ds_input_queue);
 }
 
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Digiswitch ISR
+ ******************************************************************************/
 void digiswitch_isr()
 {
     if (GPIO_PORTA_RIS_R & 0b00100000)
@@ -94,6 +104,11 @@ void digiswitch_isr()
     }
 }
 
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Digiswitch FreeRTOS task
+ ******************************************************************************/
 void digiswitch_task(void* pvParameters)
 {
     digiswitch_t = xTaskGetCurrentTaskHandle();
@@ -112,6 +127,11 @@ void digiswitch_task(void* pvParameters)
     }
 }
 
+/*****************************************************************************
+ *   Input    : TickType
+ *   Output   : Direction of turn
+ *   Function : Get direction of turn and add to array
+ ******************************************************************************/
 INT8S digiswitch_get(TickType_t xTicksToWait)
 {
     INT8S dir;

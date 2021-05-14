@@ -58,19 +58,63 @@ typedef enum PAYMENT_STATES
 
 /*****************************   Constants   *******************************/
 /*****************************   Functions   *******************************/
+
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Init payment
+ ******************************************************************************/
 void payment_init();
+
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Payment state machine
+ ******************************************************************************/
 void payment_task(void* pvParameters);
+
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Paymenttype logic / choice of payment type
+ ******************************************************************************/
 PAYMENT_STATES paymenttype_state();
+
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Cardnumber state logic / check for 8 digit cardnumber
+ ******************************************************************************/
 PAYMENT_STATES cardnumber_check_state();
+
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Pin state logic / check pin
+ ******************************************************************************/
 PAYMENT_STATES pin_check_state();
+
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Cash state logic / update payment balance
+ ******************************************************************************/
 PAYMENT_STATES cash_state();
+
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Cash state logic / calculate difference out on led
+ ******************************************************************************/
 PAYMENT_STATES change_state();
-INT8S key2int(INT8U key);
+
 /*****************************************************************************
  *   Input    : INT8U
- *   Output   : -
- *   Function : Choose payment method
+ *   Output   : INT8S
+ *   Function : Convert ascii key to int
  ******************************************************************************/
+INT8S key2int(INT8U key);
+
 
 /****************************** End Of Module *******************************/
 #endif

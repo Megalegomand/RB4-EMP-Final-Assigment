@@ -53,8 +53,18 @@ struct COFFEE_TYPE_S
 typedef struct COFFEE_TYPE_S COFFEE_TYPE;
 /*****************************   Functions   *******************************/
 
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Initialize coffee
+ ******************************************************************************/
 void coffee_init();
 
+/*****************************************************************************
+ *   Input    : pvParameters
+ *   Output   : -
+ *   Function : Coffee state machine
+ ******************************************************************************/
 void coffee_task(void *pvParameters);
 
 #endif /* COFFEE_H_ */

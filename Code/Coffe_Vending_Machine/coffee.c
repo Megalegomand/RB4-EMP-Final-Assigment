@@ -39,7 +39,11 @@ extern TaskHandle_t payment_t;
 extern INT8U balance;
 extern SemaphoreHandle_t balance_mutex;
 /*****************************   Functions   *******************************/
-
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : -
+ *   Function : Initialize coffee
+ ******************************************************************************/
 void coffee_init()
 {
     active_semaphore = xSemaphoreCreateBinary();
@@ -80,6 +84,11 @@ void coffee_init()
     coffee_types[2] = filter_coffee;
 }
 
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : Coffee state
+ *   Function : Brew state logic / brew coffee
+ ******************************************************************************/
 COFFEE_STATES brew_state()
 {
     FP32 price =
@@ -197,6 +206,11 @@ COFFEE_STATES brew_state()
     return C_LOG;
 }
 
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : Coffee state
+ *   Function : Select coffee state logic / select coffee
+ ******************************************************************************/
 COFFEE_STATES select_coffee_state()
 {
     lprintf(0, "Pick coffee");
@@ -240,6 +254,11 @@ COFFEE_STATES select_coffee_state()
     }
 }
 
+/*****************************************************************************
+ *   Input    : pvParameters
+ *   Output   : -
+ *   Function : Coffee state machine
+ ******************************************************************************/
 void coffee_task(void *pvParameters)
 {
     COFFEE_STATES current_state = SELECT_COFFEE;

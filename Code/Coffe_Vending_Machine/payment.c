@@ -34,9 +34,9 @@ extern TaskHandle_t coffee_t;
 extern SemaphoreHandle_t active_semaphore;
 /*****************************   Functions   *******************************/
 /*****************************************************************************
- *   Input    :
- *   Output   :
- *   Function :
+ *   Input    : N/A
+ *   Output   : N/A
+ *   Function : Initialize payment
  ******************************************************************************/
 
 void payment_init()
@@ -48,7 +48,12 @@ void payment_init()
     cash_set = xQueueCreateSet(DS_INPUT_QUEUE_LENGTH + 1);
 }
 
-void payment_task(void* pvParamters)
+/*****************************************************************************
+ *   Input    : pvParameters
+ *   Output   : N/A
+ *   Function : Payment state machine
+ ******************************************************************************/
+void payment_task(void* pvParameters)
 {
     PAYMENT_STATES current_state = START;
 
@@ -91,6 +96,11 @@ void payment_task(void* pvParamters)
     }
 }
 
+/*****************************************************************************
+ *   Input    :N/A
+ *   Output   :Payment state
+ *   Function :Payment type state logic
+ ******************************************************************************/
 PAYMENT_STATES paymenttype_state()
 {
     lprintf(0, "Payment method");
@@ -115,6 +125,11 @@ PAYMENT_STATES paymenttype_state()
 
 }
 
+/*****************************************************************************
+ *   Input    :N/A
+ *   Output   : Payment state
+ *   Function :Cardnumber state logic / check for 8 digit card number
+ ******************************************************************************/
 PAYMENT_STATES cardnumber_check_state()
 {
     lprintf(0, "Enter cardnumber");
@@ -141,6 +156,11 @@ PAYMENT_STATES cardnumber_check_state()
     }
 }
 
+/*****************************************************************************
+ *   Input    :N/A
+ *   Output   :Payment state
+ *   Function :Pin state logic / check pin
+ ******************************************************************************/
 PAYMENT_STATES pin_check_state()
 {
     INT8U pin[PIN_LENGTH];
@@ -207,6 +227,11 @@ PAYMENT_STATES pin_check_state()
     }
 }
 
+/*****************************************************************************
+ *   Input    : Key in ascii
+ *   Output   : Ket in int
+ *   Function :Convertion of ascii to int
+ ******************************************************************************/
 INT8S key2int(INT8U key)
 {
     INT8S out = (INT8U) key - '0';
@@ -217,6 +242,11 @@ INT8S key2int(INT8U key)
     return out;
 }
 
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : Payment state
+ *   Function : Cash state logic / update payment balance
+ ******************************************************************************/
 PAYMENT_STATES cash_state()
 {
     xSemaphoreTake(balance_mutex, portMAX_DELAY);
@@ -262,6 +292,11 @@ PAYMENT_STATES cash_state()
     return CHANGE;
 }
 
+/*****************************************************************************
+ *   Input    : N/A
+ *   Output   : Payment state
+ *   Function : Change state / output change / complete transaction
+ ******************************************************************************/
 PAYMENT_STATES change_state()
 {
     xSemaphoreTake(balance_mutex, portMAX_DELAY);
